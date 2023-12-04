@@ -5,7 +5,7 @@
         "body": [
             "<?php",
             "",
-            "namespace Chevere\\%namespace%;",
+            "namespace Chevere\\Action;",
             "",
             "/**",
             " * Describes the component in charge of ${1:doing}.",
@@ -22,7 +22,7 @@
         "body": [
             "<?php",
             "",
-            "namespace Chevere\\%namespace%;",
+            "namespace Chevere\\Action;",
             "",
             "final class $TM_FILENAME_BASE",
             "{",
@@ -36,9 +36,9 @@
         "body": [
             "<?php",
             "",
-            "namespace Chevere\\%namespace%;",
+            "namespace Chevere\\Action;",
             "",
-            "use Chevere\\Exceptions\\Core\\Exception;",
+            "use Exception;",
             "",
             "/**",
             " * Exception thrown when ${1:description}.",
@@ -54,7 +54,7 @@
         "body": [
             "<?php",
             "",
-            "namespace Chevere\\%namespace%;",
+            "namespace Chevere\\Action;",
             "",
             "trait $TM_FILENAME_BASE",
             "{",
@@ -68,7 +68,7 @@
         "body": [
             "<?php",
             "",
-            "namespace Chevere\\%namespace%\\\\${TM_DIRECTORY/.*src\\/(([^\\/]*)(\\/)?)|(\\/)([^\\/]*)/$2${3:+.}${5:+.}$5/g};",
+            "namespace Chevere\\Action\\\\${TM_DIRECTORY/.*src\\/(([^\\/]*)(\\/)?)|(\\/)([^\\/]*)/$2${3:+.}${5:+.}$5/g};",
             "",
             "/**",
             " * Describes the component in charge of ${1:doing}.",
@@ -85,7 +85,7 @@
         "body": [
             "<?php",
             "",
-            "namespace Chevere\\%namespace%\\\\${TM_DIRECTORY/.*src\\/(([^\\/]*)(\\/)?)|(\\/)([^\\/]*)/$2${3:+.}${5:+.}$5/g};",
+            "namespace Chevere\\Action\\\\${TM_DIRECTORY/.*src\\/(([^\\/]*)(\\/)?)|(\\/)([^\\/]*)/$2${3:+.}${5:+.}$5/g};",
             "",
             "final class $TM_FILENAME_BASE",
             "{",
@@ -99,9 +99,9 @@
         "body": [
             "<?php",
             "",
-            "namespace Chevere\\%namespace%\\\\${TM_DIRECTORY/.*src\\/(([^\\/]*)(\\/)?)|(\\/)([^\\/]*)/$2${3:+.}${5:+.}$5/g};",
+            "namespace Chevere\\Action\\\\${TM_DIRECTORY/.*src\\/(([^\\/]*)(\\/)?)|(\\/)([^\\/]*)/$2${3:+.}${5:+.}$5/g};",
             "",
-            "use Chevere\\Exceptions\\Core\\Exception;",
+            "use Exception;",
             "",
             "/**",
             " * Exception thrown when ${1:description}.",
@@ -117,7 +117,7 @@
         "body": [
             "<?php",
             "",
-            "namespace Chevere\\%namespace%\\\\${TM_DIRECTORY/.*src\\/(([^\\/]*)(\\/)?)|(\\/)([^\\/]*)/$2${3:+.}${5:+.}$5/g};",
+            "namespace Chevere\\Action\\\\${TM_DIRECTORY/.*src\\/(([^\\/]*)(\\/)?)|(\\/)([^\\/]*)/$2${3:+.}${5:+.}$5/g};",
             "",
             "trait $TM_FILENAME_BASE",
             "{",
