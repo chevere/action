@@ -14,9 +14,12 @@ declare(strict_types=1);
 namespace Chevere\Action;
 
 use Chevere\Parameter\Interfaces\ParametersInterface;
-use function Chevere\Parameter\methodParameters;
+use ReflectionMethod;
+use function Chevere\Parameter\reflectionToParameters;
 
 function getParameters(string $action): ParametersInterface
 {
-    return methodParameters($action, 'run');
+    $reflection = new ReflectionMethod($action, 'run');
+
+    return reflectionToParameters($reflection);
 }
