@@ -37,32 +37,24 @@ abstract class Action implements ActionInterface
 
     protected ?ParametersInterface $parameters = null;
 
-    public static function acceptResponse(): ParameterInterface
-    {
-        return arrayp();
-    }
+    protected ?ParameterInterface $return = null;
 
-    final public static function assert(): void
-    {
-        static::assertMethod();
-        static::assertStatic();
-    }
-
-    final public function getResponse(mixed ...$argument): CastInterface
+    final public function __invoke(mixed ...$argument): CastInterface
     {
         static::assert();
+        // @infection-ignore-all
         $this->assertRuntime();
         $arguments = arguments($this->parameters(), $argument)->toArray();
         $run = $this->run(...$arguments);
 
         try {
-            static::acceptResponse()->__invoke($run);
+            static::return()(...)($run);
         } catch (Throwable $e) {
-            $message = message(
+            $message = (string) message(
                 '`%method%` → %message%',
                 method: static::runMethodFQN(),
                 message: $e->getMessage(),
-            )->__toString();
+            );
 
             throw new ($e::class)($message);
         }
@@ -70,68 +62,57 @@ abstract class Action implements ActionInterface
         return new Cast($run);
     }
 
-    public static function assertTypes(
-        ReflectionNamedType $reflection,
-        ParameterInterface $response
-    ): void {
-        $returnName = $reflection->getName();
-        $expectName = $response->type()->typeHinting();
-        $return = match ($returnName) {
-            'void' => 'null',
-            'ArrayAccess' => 'array',
-            default => $returnName,
-        };
-        $expect = [];
-        if ($response instanceof UnionParameterInterface) {
-            foreach ($response->parameters() as $parameter) {
-                $expect[] = $parameter->type()->typeHinting();
-            }
-        } else {
-            $expect[] = match ($expectName) {
-                'generic' => 'array',
-                default => $expectName,
-            };
-        }
-        if (! in_array($return, $expect, true)) {
-            throw new TypeError(
-                (string) message(
-                    'Method `%method%` must declare `%type%` return type',
-                    method: static::runMethodFQN(),
-                    type: implode('|', $expect),
-                )
-            );
-        }
+    public static function return(): ParameterInterface
+    {
+        return arrayp();
     }
 
-    protected static function assertMethod(): void
+    final public static function assert(): void
+    {
+        [$method, $return] = static::assertMethod();
+        /**
+         * @var ?ReflectionNamedType $returnType
+         * @phpstan-ignore-next-line
+         */
+        $returnType = $method->getReturnType();
+        if ($returnType !== null) {
+            // @phpstan-ignore-next-line
+            static::assertTypes($returnType, $return);
+        }
+        static::assertStatic();
+    }
+
+    /**
+     * @return array<object> [$method, $return]
+     */
+    final protected static function assertMethod(): array
     {
         if (! method_exists(static::class, static::RUN_METHOD)) {
             throw new LogicException(
                 (string) message(
-                    'Action `%action%` does not define %invoke% method',
+                    'Action `%action%` does not define a %run% method',
                     action: static::class,
-                    invoke: static::RUN_METHOD,
+                    run: static::RUN_METHOD,
                 )
             );
         }
-        $response = static::acceptResponse();
         $method = new ReflectionMethod(static::class, static::RUN_METHOD);
+        $return = static::return();
         if (! $method->hasReturnType()) {
-            if ($response->type()->typeHinting() === 'null') {
-                return;
+            if ($return->type()->typeHinting() === 'null') {
+                return [$method, $return];
             }
 
             throw new TypeError(
                 (string) message(
                     'Method `%method%` must declare `%type%` return type',
                     method: static::runMethodFQN(),
-                    type: $response->type()->typeHinting(),
+                    type: $return->type()->typeHinting(),
                 )
             );
         }
-        /** @var ReflectionNamedType $returnType */
-        $returnType = $method->getReturnType();
-        static::assertTypes($returnType, $response);
+
+        return [$method, $return];
     }
 
     /**
@@ -164,5 +145,38 @@ abstract class Action implements ActionInterface
     final protected static function runMethodFQN(): string
     {
         return static::class . '::' . static::RUN_METHOD;
+    }
+
+    final protected static function assertTypes(
+        ReflectionNamedType $reflection,
+        ParameterInterface $parameter
+    ): void {
+        $returnName = $reflection->getName();
+        $expectName = $parameter->type()->typeHinting();
+        $return = match ($returnName) {
+            'void' => 'null',
+            'ArrayAccess' => 'array',
+            default => $returnName,
+        };
+        $expect = [];
+        if ($parameter instanceof UnionParameterInterface) {
+            foreach ($parameter->parameters() as $parameter) {
+                $expect[] = $parameter->type()->typeHinting();
+            }
+        } else {
+            $expect[] = match ($expectName) {
+                'generic' => 'array',
+                default => $expectName,
+            };
+        }
+        if (! in_array($return, $expect, true)) {
+            throw new TypeError(
+                (string) message(
+                    'Method `%method%` must declare `%type%` return type',
+                    method: static::runMethodFQN(),
+                    type: implode('|', $expect),
+                )
+            );
+        }
     }
 }

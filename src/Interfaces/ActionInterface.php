@@ -23,14 +23,14 @@ use Chevere\Parameter\Interfaces\ParameterInterface;
 interface ActionInterface
 {
     /**
-     * Defines expected response parameter when executing `run` method.
+     * Retrieves `run` return validated against `return` method.
      */
-    public static function acceptResponse(): ParameterInterface;
+    public function __invoke(mixed ...$argument): CastInterface;
 
     /**
-     * Retrieves `run` response checked against `acceptResponse`.
+     * Defines expected return parameter when executing `RUN_METHOD` method.
      */
-    public function getResponse(mixed ...$argument): CastInterface;
+    public static function return(): ParameterInterface;
 
     /**
      * Assert for static context.

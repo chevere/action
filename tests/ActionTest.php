@@ -41,14 +41,14 @@ final class ActionTest extends TestCase
     {
         $action = new ActionTestMissingRun();
         $this->expectException(LogicException::class);
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testWithArguments(): void
     {
         $expected = 'PeoplesHernandez';
         $action = new ActionTestController();
-        $string = $action->getResponse(name: $expected)->string();
+        $string = $action->__invoke(name: $expected)->string();
         $this->assertSame($expected, $string);
     }
 
@@ -57,35 +57,35 @@ final class ActionTest extends TestCase
         $action = new ActionTestMethodParameterMissingType();
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage('$mixed');
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testReturnExtraArguments(): void
     {
         $action = new ActionTestReturnExtraArguments();
         $this->expectException(ArgumentCountError::class);
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testGenericResponse(): void
     {
         $action = new ActionTestGenericResponse();
         $this->expectNotToPerformAssertions();
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testGenericResponseError(): void
     {
         $action = new ActionTestGenericResponseError();
         $this->expectException(InvalidArgumentException::class);
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testUnionResponse(): void
     {
         $action = new ActionTestUnionReturnType();
         $this->expectNotToPerformAssertions();
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testUnionResponseError(): void
@@ -98,28 +98,28 @@ final class ActionTest extends TestCase
             Method `{$class}::run` must declare `string|int` return type
             PLAIN
         );
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testArrayAccessResponse(): void
     {
         $action = new ActionTestArrayAccessReturnType();
         $this->expectNotToPerformAssertions();
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testPrivateScope(): void
     {
         $action = new ActionTestPrivateScope();
         $this->expectException(Error::class);
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testNullReturnType(): void
     {
         $action = new ActionTestNullReturnType();
         $this->expectNotToPerformAssertions();
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testNoReturnTypeError(): void
@@ -132,14 +132,14 @@ final class ActionTest extends TestCase
             Method `{$class}::run` must declare `array` return type
             PLAIN
         );
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testNullParameterNoReturn(): void
     {
         $action = new ActionTestNullParameterNoReturn();
         $this->expectNotToPerformAssertions();
-        $action->getResponse();
+        $action->__invoke();
     }
 
     public function testParametersNullAssign(): void
@@ -148,7 +148,7 @@ final class ActionTest extends TestCase
         $reflection = new ReflectionProperty($action, 'parameters');
         $this->assertTrue($reflection->isInitialized($action));
         $this->assertNull($reflection->getValue($action));
-        $action->getResponse();
+        $action->__invoke();
         $reflection->getValue($action);
     }
 }

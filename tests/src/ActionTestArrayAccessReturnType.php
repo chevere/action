@@ -21,7 +21,7 @@ use function Chevere\Parameter\arrayp;
 
 final class ActionTestArrayAccessReturnType extends Action
 {
-    public static function acceptResponse(): ParameterInterface
+    public static function return(): ParameterInterface
     {
         return arrayp();
     }

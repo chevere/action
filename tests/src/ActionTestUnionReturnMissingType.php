@@ -21,7 +21,7 @@ use function Chevere\Parameter\union;
 
 final class ActionTestUnionReturnMissingType extends Action
 {
-    public static function acceptResponse(): ParameterInterface
+    public static function return(): ParameterInterface
     {
         return union(
             string(),

@@ -14,17 +14,15 @@ declare(strict_types=1);
 namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
-use Chevere\Parameter\Interfaces\ParameterInterface;
-use function Chevere\Parameter\arrayp;
 
-final class ActionTestNoReturnTypeError extends Action
+final class ActionTestOverride extends Action
 {
-    public static function return(): ParameterInterface
-    {
-        return arrayp();
-    }
+    public static bool $assertTypes = false;
 
-    protected function run()
+    public static bool $assertMethod = false;
+
+    protected function run(): array
     {
+        return [];
     }
 }

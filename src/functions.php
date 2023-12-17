@@ -19,7 +19,7 @@ use function Chevere\Parameter\reflectionToParameters;
 
 function getParameters(string $action): ParametersInterface
 {
-    $reflection = new ReflectionMethod($action, 'run');
+    $reflection = new ReflectionMethod($action, Action::RUN_METHOD);
 
     return reflectionToParameters($reflection);
 }
