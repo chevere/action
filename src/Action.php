@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Action;
 
 use Chevere\Action\Interfaces\ActionInterface;
+use Chevere\Parameter\Attributes\ReturnAttr;
 use Chevere\Parameter\Cast;
 use Chevere\Parameter\Interfaces\CastInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
@@ -26,7 +27,8 @@ use Throwable;
 use TypeError;
 use function Chevere\Message\message;
 use function Chevere\Parameter\arguments;
-use function Chevere\Parameter\arrayp;
+use function Chevere\Parameter\mixed;
+use function Chevere\Parameter\reflectionToReturnParameter;
 
 /**
  * @method mixed run()
@@ -64,7 +66,7 @@ abstract class Action implements ActionInterface
 
     public static function return(): ParameterInterface
     {
-        return arrayp();
+        return mixed();
     }
 
     final public static function assert(): void
@@ -96,11 +98,16 @@ abstract class Action implements ActionInterface
                 )
             );
         }
-        $method = new ReflectionMethod(static::class, static::RUN_METHOD);
-        $return = static::return();
-        if (! $method->hasReturnType()) {
+        $reflection = new ReflectionMethod(static::class, static::RUN_METHOD);
+        $attributes = $reflection->getAttributes(ReturnAttr::class);
+        if ($attributes === []) {
+            $return = static::return();
+        } else {
+            $return = reflectionToReturnParameter($reflection);
+        }
+        if (! $reflection->hasReturnType()) {
             if ($return->type()->typeHinting() === 'null') {
-                return [$method, $return];
+                return [$reflection, $return];
             }
 
             throw new TypeError(
@@ -112,7 +119,7 @@ abstract class Action implements ActionInterface
             );
         }
 
-        return [$method, $return];
+        return [$reflection, $return];
     }
 
     /**
@@ -168,6 +175,9 @@ abstract class Action implements ActionInterface
                 'generic' => 'array',
                 default => $expectName,
             };
+        }
+        if (in_array('mixed', $expect, true)) {
+            return;
         }
         if (! in_array($return, $expect, true)) {
             throw new TypeError(
