@@ -35,8 +35,6 @@ use function Chevere\Parameter\reflectionToReturnParameter;
  */
 trait ActionTrait
 {
-    public const RUN_METHOD = 'run';
-
     protected ?ParametersInterface $parameters = null;
 
     protected ?ParameterInterface $return = null;
@@ -50,7 +48,7 @@ trait ActionTrait
         $run = $this->run(...$arguments);
 
         try {
-            static::return()(...)($run);
+            static::return()->__invoke($run);
         } catch (Throwable $e) {
             $message = (string) message(
                 '`%method%` → %message%',
@@ -84,21 +82,26 @@ trait ActionTrait
         static::assertStatic();
     }
 
+    public static function runMethod(): string
+    {
+        return 'run';
+    }
+
     /**
      * @return array<object> [$method, $return]
      */
     final protected static function assertMethod(): array
     {
-        if (! method_exists(static::class, static::RUN_METHOD)) {
+        if (! method_exists(static::class, static::runMethod())) {
             throw new LogicException(
                 (string) message(
-                    'Action `%action%` does not define a %run% method',
+                    'Action `%action%` does not define `%run%` method',
                     action: static::class,
-                    run: static::RUN_METHOD,
+                    run: static::runMethod(),
                 )
             );
         }
-        $reflection = new ReflectionMethod(static::class, static::RUN_METHOD);
+        $reflection = new ReflectionMethod(static::class, static::runMethod());
         $attributes = $reflection->getAttributes(ReturnAttr::class);
         if ($attributes === []) {
             $return = static::return();
@@ -151,7 +154,7 @@ trait ActionTrait
 
     final protected static function runMethodFQN(): string
     {
-        return static::class . '::' . static::RUN_METHOD;
+        return static::class . '::' . static::runMethod();
     }
 
     final protected static function assertTypes(

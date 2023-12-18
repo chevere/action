@@ -28,7 +28,7 @@ interface ActionInterface
     public function __invoke(mixed ...$argument): CastInterface;
 
     /**
-     * Defines expected return parameter when executing `RUN_METHOD` method.
+     * Defines expected return parameter when executing target run method.
      */
     public static function return(): ParameterInterface;
 
@@ -36,4 +36,9 @@ interface ActionInterface
      * Assert for static context.
      */
     public static function assert(): void;
+
+    /**
+     * Determines run method to use.
+     */
+    public static function runMethod(): string;
 }
