@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use ArgumentCountError;
 use Chevere\Tests\src\ActionTestAction;
 use Chevere\Tests\src\ActionTestArrayAccessReturnType;
+use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
 use Chevere\Tests\src\ActionTestGenericResponse;
 use Chevere\Tests\src\ActionTestGenericResponseError;
@@ -150,5 +151,18 @@ final class ActionTest extends TestCase
         $this->assertNull($reflection->getValue($action));
         $action->__invoke();
         $reflection->getValue($action);
+    }
+
+    public function testAttributeValidation(): void
+    {
+        $action = new ActionTestAttributes();
+        $this->assertSame(1, $action->__invoke(value: 'ab')->int());
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            `Chevere\Tests\src\ActionTestAttributes::run` → [value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
+            PLAIN
+        );
+        $action->__invoke(value: 'ac');
     }
 }

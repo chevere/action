@@ -26,7 +26,6 @@ use Throwable;
 use TypeError;
 use function Chevere\Action\getParameters;
 use function Chevere\Message\message;
-use function Chevere\Parameter\arguments;
 use function Chevere\Parameter\mixed;
 use function Chevere\Parameter\reflectionToReturnParameter;
 
@@ -44,19 +43,27 @@ trait ActionTrait
         static::assert();
         // @infection-ignore-all
         $this->assertRuntime();
-        $arguments = arguments($this->parameters(), $argument)->toArray();
-        $run = $this->run(...$arguments);
 
         try {
-            static::return()->__invoke($run);
+            $arguments = $this->parameters()->__invoke(...$argument);
         } catch (Throwable $e) {
-            $message = (string) message(
-                '`%method%` → %message%',
-                method: static::runMethodFQN(),
-                message: $e->getMessage(),
-            );
+            throw new ($e::class)($this->getInvokeErrorMessage($e));
+        }
+        $run = $this->run(...$arguments->toArray());
+        $reflection = new ReflectionMethod(static::class, static::runMethod());
+        $attribute = $reflection->getAttributes(ReturnAttr::class)[0] ?? null;
+        if ($attribute === null) {
+            $return = static::return();
+        } else {
+            $attribute = $attribute->newInstance();
+            /** @var ReturnAttr $attribute */
+            $return = $attribute->parameter();
+        }
 
-            throw new ($e::class)($message);
+        try {
+            $return->__invoke($run);
+        } catch (Throwable $e) {
+            throw new ($e::class)($this->getInvokeErrorMessage($e));
         }
 
         return new Cast($run);
@@ -85,6 +92,15 @@ trait ActionTrait
     public static function runMethod(): string
     {
         return 'run';
+    }
+
+    protected function getInvokeErrorMessage(Throwable $e): string
+    {
+        return (string) message(
+            '`%method%` → %message%',
+            method: static::runMethodFQN(),
+            message: $e->getMessage(),
+        );
     }
 
     /**
