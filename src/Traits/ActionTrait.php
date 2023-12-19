@@ -40,9 +40,13 @@ trait ActionTrait
 
     final public function __invoke(mixed ...$argument): CastInterface
     {
-        static::assert();
+        /**
+         * @var ReflectionMethod $reflection
+         * @var ParameterInterface $return
+         */
+        [$reflection, $return] = static::assert();
         // @infection-ignore-all
-        $this->assertRuntime();
+        $this->assertRuntime($reflection, $return);
 
         try {
             $arguments = $this->parameters()->__invoke(...$argument);
@@ -50,15 +54,6 @@ trait ActionTrait
             throw new ($e::class)($this->getInvokeErrorMessage($e));
         }
         $run = $this->run(...$arguments->toArray());
-        $reflection = new ReflectionMethod(static::class, static::runMethod());
-        $attribute = $reflection->getAttributes(ReturnAttr::class)[0] ?? null;
-        if ($attribute === null) {
-            $return = static::return();
-        } else {
-            $attribute = $attribute->newInstance();
-            /** @var ReturnAttr $attribute */
-            $return = $attribute->parameter();
-        }
 
         try {
             $return->__invoke($run);
@@ -74,24 +69,33 @@ trait ActionTrait
         return mixed();
     }
 
-    final public static function assert(): void
+    public static function runMethod(): string
     {
-        [$method, $return] = static::assertMethod();
+        return 'run';
+    }
+
+    /**
+     * @return array<ReflectionMethod|ParameterInterface>
+     */
+    protected static function assert(): array
+    {
+        /**
+         * @var ReflectionMethod $reflection
+         * @var ParameterInterface $return
+         */
+        [$reflection, $return] = static::assertMethod();
         /**
          * @var ?ReflectionNamedType $returnType
          * @phpstan-ignore-next-line
          */
-        $returnType = $method->getReturnType();
+        $returnType = $reflection->getReturnType();
         if ($returnType !== null) {
             // @phpstan-ignore-next-line
             static::assertTypes($returnType, $return);
         }
-        static::assertStatic();
-    }
+        static::assertStatic($reflection, $return);
 
-    public static function runMethod(): string
-    {
-        return 'run';
+        return [$reflection, $return];
     }
 
     protected function getInvokeErrorMessage(Throwable $e): string
@@ -104,7 +108,7 @@ trait ActionTrait
     }
 
     /**
-     * @return array<object> [$method, $return]
+     * @return array<object> [$reflection, $return]
      */
     final protected static function assertMethod(): array
     {
@@ -145,8 +149,10 @@ trait ActionTrait
      * Enables to define extra parameter assertion before the run method is called.
      * @codeCoverageIgnore
      */
-    protected static function assertStatic(): void
-    {
+    protected static function assertStatic(
+        ReflectionMethod $reflection,
+        ParameterInterface $return
+    ): void {
         // enables extra static assertion
     }
 
@@ -154,8 +160,10 @@ trait ActionTrait
      * Enables to define extra parameter assertion before the run method is called.
      * @codeCoverageIgnore
      */
-    protected function assertRuntime(): void
-    {
+    protected function assertRuntime(
+        ReflectionMethod $reflection,
+        ParameterInterface $return
+    ): void {
         // enables extra runtime assertion
     }
 

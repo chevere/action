@@ -14,16 +14,25 @@ declare(strict_types=1);
 namespace Chevere\Action;
 
 use Chevere\Action\Interfaces\ControllerInterface;
+use Chevere\Action\Traits\ActionTrait;
+use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use InvalidArgumentException;
+use ReflectionMethod;
 use function Chevere\Message\message;
+use function Chevere\Parameter\reflectionToParameters;
 
-abstract class Controller extends Action implements ControllerInterface
+abstract class Controller implements ControllerInterface
 {
-    protected static function assertStatic(): void
-    {
+    use ActionTrait;
+
+    protected static function assertStatic(
+        ReflectionMethod $reflection,
+        ParameterInterface $return
+    ): void {
         $invalid = [];
-        foreach (getParameters(static::class) as $name => $parameter) {
+        $parameters = reflectionToParameters($reflection);
+        foreach ($parameters as $name => $parameter) {
             if (! ($parameter instanceof StringParameterInterface)) {
                 $invalid[] = $name;
             }

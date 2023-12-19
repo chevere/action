@@ -33,11 +33,6 @@ interface ActionInterface
     public static function return(): ParameterInterface;
 
     /**
-     * Assert for static context.
-     */
-    public static function assert(): void;
-
-    /**
      * Determines run method to use.
      */
     public static function runMethod(): string;
