@@ -18,6 +18,93 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=sqale_index)](https://sonarcloud.io/dashboard?id=chevere_action)
 [![CodeFactor](https://www.codefactor.io/repository/github/chevere/action/badge)](https://www.codefactor.io/repository/github/chevere/action)
 
+## Summary
+
+Action provides an object-oriented convention for working with [Parameter](https://github.com/chevere/parameter). The convention is the implementation of `ActionInterface` and the usage of `run()` method to define class main logic.
+
+## Quick start
+
+Install with [Composer](https://packagist.org/packages/chevere/action)
+
+```sh
+composer require chevere/action
+```
+
+## Cookbook
+
+* Create action by implementing `ActionInterface`:
+
+```php
+use Chevere\Action\Attributes\IntAttr;
+use Chevere\Action\Attributes\ReturnAttr;
+use Chevere\Action\Interfaces\ActionInterface;
+use Chevere\Action\Traits\ActionTrait;
+
+class MyAction implements ActionInterface
+{
+    use ActionTrait;
+
+    #[ReturnAttr(
+        new IntAttr(min: 0, max: 100)
+    )]
+    protected function run(
+        #[StringAttr('/^ok/')]
+        string $value
+    ): int
+    {
+        return 10;
+    }
+}
+```
+
+* (Alternative) Create action by extending `Action`:
+
+```php
+
+use Chevere\Action\Action;
+
+class MyAction extends Action
+{
+    // ...
+}
+```
+
+* Invoke your action to validate **arguments** and **return**
+
+```php
+$action = new MyAction();
+$result = $action('ok');
+```
+
+## Advanced usage
+
+For validating `return` beyond the limitations of PHP's attributes you can define the `return()` public static function. In this context you can use and remix any [Parameter function](https://github.com/chevere/parameter#function-reference).
+
+```php
+use Chevere\Action\Interfaces\ParameterInterface;
+use function Chevere\Parameter\string;
+
+public static function return(): ParameterInterface
+{
+    return string();
+}
+```
+
+You can also forward parameter resolution to a callable using `CallableAttr`:
+
+```php
+use Chevere\Action\Attributes\CallableAttr;
+use Chevere\Action\Attributes\ReturnAttr;
+
+#[ReturnAttr(
+    new CallableAttr('myCallable')
+)]
+protected function run(): string
+{
+    return 'chevere';
+}
+```
+
 ## Documentation
 
 Documentation is available at [chevere.org](https://chevere.org/).
