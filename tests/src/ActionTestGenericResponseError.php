@@ -29,7 +29,7 @@ final class ActionTestGenericResponseError extends Action
         );
     }
 
-    protected function run(): array
+    protected function main(): array
     {
         return [
             'a' => 123,

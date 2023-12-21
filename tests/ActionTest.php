@@ -38,7 +38,7 @@ use TypeError;
 
 final class ActionTest extends TestCase
 {
-    public function testMissingRunMethod(): void
+    public function testMissingMainMethod(): void
     {
         $action = new ActionTestMissingRun();
         $this->expectException(LogicException::class);
@@ -96,7 +96,7 @@ final class ActionTest extends TestCase
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Method `{$class}::run` must declare `string|int` return type
+            Method `{$class}::main` must declare `string|int` return type
             PLAIN
         );
         $action->__invoke();
@@ -130,7 +130,7 @@ final class ActionTest extends TestCase
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Method `{$class}::run` must declare `array` return type
+            Method `{$class}::main` must declare `array` return type
             PLAIN
         );
         $action->__invoke();
@@ -160,7 +160,7 @@ final class ActionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestAttributes::run` → [value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
+            `Chevere\Tests\src\ActionTestAttributes::main` → [value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
             PLAIN
         );
         $action->__invoke(value: 'ac');

@@ -11,27 +11,23 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\src;
-
-use Chevere\Action\Action;
+use Chevere\Action\Interfaces\ActionInterface;
+use Chevere\Action\Traits\ActionTrait;
 use Chevere\Parameter\Attributes\IntAttr;
 use Chevere\Parameter\Attributes\ReturnAttr;
 use Chevere\Parameter\Attributes\StringAttr;
-use Chevere\Parameter\Interfaces\ParameterInterface;
-use function Chevere\Parameter\string;
 
-final class ActionTestAttributes extends Action
+class MyAction implements ActionInterface
 {
-    public static function return(): ParameterInterface
-    {
-        return string();
-    }
+    use ActionTrait;
 
-    #[ReturnAttr(new IntAttr(min: 1))]
+    #[ReturnAttr(
+        new IntAttr(min: 0, max: 100)
+    )]
     protected function main(
-        #[StringAttr('/^ab$/')]
+        #[StringAttr('/^ok/')]
         string $value
     ): int {
-        return 1;
+        return 100;
     }
 }

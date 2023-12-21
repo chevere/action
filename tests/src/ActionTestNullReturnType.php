@@ -24,7 +24,7 @@ final class ActionTestNullReturnType extends Action
         return null();
     }
 
-    protected function run(): void
+    protected function main(): void
     {
     }
 }

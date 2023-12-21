@@ -30,7 +30,7 @@ use function Chevere\Parameter\mixed;
 use function Chevere\Parameter\reflectionToReturnParameter;
 
 /**
- * @method mixed run()
+ * @method mixed main()
  */
 trait ActionTrait
 {
@@ -53,7 +53,7 @@ trait ActionTrait
         } catch (Throwable $e) {
             throw new ($e::class)($this->getInvokeErrorMessage($e));
         }
-        $run = $this->run(...$arguments->toArray());
+        $run = $this->main(...$arguments->toArray());
 
         try {
             $return->__invoke($run);
@@ -69,9 +69,9 @@ trait ActionTrait
         return mixed();
     }
 
-    public static function runMethod(): string
+    public static function mainMethod(): string
     {
-        return 'run';
+        return 'main';
     }
 
     /**
@@ -100,10 +100,13 @@ trait ActionTrait
 
     protected function getInvokeErrorMessage(Throwable $e): string
     {
+        $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
+
         return (string) message(
-            '`%method%` → %message%',
-            method: static::runMethodFQN(),
+            '`%method%` → %message% at %fileLine%',
+            method: static::mainMethodFQN(),
             message: $e->getMessage(),
+            fileLine: $caller['file'] . ':' . $caller['line']
         );
     }
 
@@ -112,16 +115,16 @@ trait ActionTrait
      */
     final protected static function assertMethod(): array
     {
-        if (! method_exists(static::class, static::runMethod())) {
+        if (! method_exists(static::class, static::mainMethod())) {
             throw new LogicException(
                 (string) message(
                     'Action `%action%` does not define `%run%` method',
                     action: static::class,
-                    run: static::runMethod(),
+                    run: static::mainMethod(),
                 )
             );
         }
-        $reflection = new ReflectionMethod(static::class, static::runMethod());
+        $reflection = new ReflectionMethod(static::class, static::mainMethod());
         $attributes = $reflection->getAttributes(ReturnAttr::class);
         if ($attributes === []) {
             $return = static::return();
@@ -136,7 +139,7 @@ trait ActionTrait
             throw new TypeError(
                 (string) message(
                     'Method `%method%` must declare `%type%` return type',
-                    method: static::runMethodFQN(),
+                    method: static::mainMethodFQN(),
                     type: $return->type()->typeHinting(),
                 )
             );
@@ -176,9 +179,9 @@ trait ActionTrait
         return $this->parameters;
     }
 
-    final protected static function runMethodFQN(): string
+    final protected static function mainMethodFQN(): string
     {
-        return static::class . '::' . static::runMethod();
+        return static::class . '::' . static::mainMethod();
     }
 
     final protected static function assertTypes(
@@ -210,7 +213,7 @@ trait ActionTrait
             throw new TypeError(
                 (string) message(
                     'Method `%method%` must declare `%type%` return type',
-                    method: static::runMethodFQN(),
+                    method: static::mainMethodFQN(),
                     type: implode('|', $expect),
                 )
             );

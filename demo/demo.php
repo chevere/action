@@ -11,14 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests\src;
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/MyAction.php';
 
-use Chevere\Action\Action;
-
-final class ActionTestBoolReturn extends Action
-{
-    protected function main(): bool
-    {
-        return true;
-    }
-}
+$action = new MyAction();
+$result = $action('ok muy bueno');
+echo $result->int() . PHP_EOL;

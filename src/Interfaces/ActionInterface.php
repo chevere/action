@@ -18,22 +18,22 @@ use Chevere\Parameter\Interfaces\ParameterInterface;
 
 /**
  * Describes the component in charge of defining a single logic action.
- * @method mixed run() Defines the action run logic.
+ * @method mixed main() Defines the action main logic.
  */
 interface ActionInterface
 {
     /**
-     * Retrieves `run` return validated against `return` method.
+     * Retrieves `main` return validated against all rules.
      */
     public function __invoke(mixed ...$argument): CastInterface;
 
     /**
-     * Defines expected return parameter when executing target run method.
+     * Defines expected return parameter when executing target main method.
      */
     public static function return(): ParameterInterface;
 
     /**
-     * Determines run method to use.
+     * Determines main method to use.
      */
-    public static function runMethod(): string;
+    public static function mainMethod(): string;
 }

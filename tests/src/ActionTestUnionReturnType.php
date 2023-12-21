@@ -29,7 +29,7 @@ final class ActionTestUnionReturnType extends Action
         );
     }
 
-    protected function run(): string
+    protected function main(): string
     {
         return '';
     }

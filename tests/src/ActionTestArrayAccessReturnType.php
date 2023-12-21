@@ -26,7 +26,7 @@ final class ActionTestArrayAccessReturnType extends Action
         return arrayp();
     }
 
-    protected function run(): ArrayAccess
+    protected function main(): ArrayAccess
     {
         return new ArrayObject([]);
     }

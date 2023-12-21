@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 
 final class ActionTestAction extends Action
 {
-    protected function run(): array
+    protected function main(): array
     {
         return [];
     }

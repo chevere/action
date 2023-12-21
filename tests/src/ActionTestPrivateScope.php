@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 
 final class ActionTestPrivateScope extends Action
 {
-    private function run(): array
+    private function main(): array
     {
         return [];
     }

@@ -17,7 +17,7 @@ use Chevere\Action\Controller;
 
 final class ControllerNameTestController extends Controller
 {
-    protected function run(): array
+    protected function main(): array
     {
         return [];
     }

@@ -24,7 +24,7 @@ final class ActionTestController extends Controller
         return string();
     }
 
-    protected function run(string $name): string
+    protected function main(string $name): string
     {
         return $name;
     }

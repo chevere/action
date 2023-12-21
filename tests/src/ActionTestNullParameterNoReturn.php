@@ -24,7 +24,7 @@ final class ActionTestNullParameterNoReturn extends Action
         return null();
     }
 
-    protected function run()
+    protected function main()
     {
     }
 }

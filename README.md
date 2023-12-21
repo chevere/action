@@ -20,7 +20,7 @@
 
 ## Summary
 
-Action provides an object-oriented convention for working with [Parameter](https://github.com/chevere/parameter). The convention is the implementation of `ActionInterface` and the usage of `run()` method to define class main logic.
+Action provides an object-oriented convention for working with [Parameter](https://github.com/chevere/parameter). The convention is the implementation of `ActionInterface` and the usage of `main` method to define class main logic.
 
 ## Quick start
 
@@ -32,35 +32,22 @@ composer require chevere/action
 
 ## Cookbook
 
-* Create action by implementing `ActionInterface`:
+* Create an action by using `ActionTrait`:
 
 ```php
-use Chevere\Action\Attributes\IntAttr;
-use Chevere\Action\Attributes\ReturnAttr;
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\Traits\ActionTrait;
 
 class MyAction implements ActionInterface
 {
     use ActionTrait;
-
-    #[ReturnAttr(
-        new IntAttr(min: 0, max: 100)
-    )]
-    protected function run(
-        #[StringAttr('/^ok/')]
-        string $value
-    ): int
-    {
-        return 10;
-    }
+    // ...
 }
 ```
 
-* (Alternative) Create action by extending `Action`:
+* (Alternative) Create an action by extending `Action`:
 
 ```php
-
 use Chevere\Action\Action;
 
 class MyAction extends Action
@@ -69,16 +56,34 @@ class MyAction extends Action
 }
 ```
 
-* Invoke your action to validate **arguments** and **return**
+* Use the `main` method to validate your action's main logic using **attributes** on parameters and method return:
+
+```php
+use Chevere\Parameter\Attributes\IntAttr;
+use Chevere\Parameter\Attributes\ReturnAttr;
+
+#[ReturnAttr(
+    new IntAttr(min: 0, max: 100)
+)]
+protected function main(
+    #[StringAttr('/^ok/')]
+    string $value
+): int
+{
+    return 10;
+}
+```
+
+* **Invoke** the action passing the `main` arguments to validate arguments and return:
 
 ```php
 $action = new MyAction();
-$result = $action('ok');
+$result = $action('ok muy bueno');
 ```
 
 ## Advanced usage
 
-For validating `return` beyond the limitations of PHP's attributes you can define the `return()` public static function. In this context you can use and remix any [Parameter function](https://github.com/chevere/parameter#function-reference).
+For validating `return` beyond the limitations of PHP's attributes you can define the `return()` function. In this context you can use and remix any [Parameter function](https://github.com/chevere/parameter#function-reference).
 
 ```php
 use Chevere\Action\Interfaces\ParameterInterface;
@@ -99,7 +104,7 @@ use Chevere\Action\Attributes\ReturnAttr;
 #[ReturnAttr(
     new CallableAttr('myCallable')
 )]
-protected function run(): string
+protected function main(): string
 {
     return 'chevere';
 }

@@ -29,7 +29,7 @@ final class ActionTestUnionReturnMissingType extends Action
         );
     }
 
-    protected function run(): float
+    protected function main(): float
     {
         return 3.1;
     }

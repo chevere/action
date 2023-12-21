@@ -21,7 +21,7 @@ final class ActionTestOverride extends Action
 
     public static bool $assertMethod = false;
 
-    protected function run(): array
+    protected function main(): array
     {
         return [];
     }

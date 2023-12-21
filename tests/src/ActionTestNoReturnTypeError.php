@@ -24,7 +24,7 @@ final class ActionTestNoReturnTypeError extends Action
         return arrayp();
     }
 
-    protected function run()
+    protected function main()
     {
     }
 }
