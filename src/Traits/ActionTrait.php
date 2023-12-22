@@ -77,7 +77,7 @@ trait ActionTrait
     /**
      * @return array<ReflectionMethod|ParameterInterface>
      */
-    protected static function assert(): array
+    public static function assert(): array
     {
         /**
          * @var ReflectionMethod $reflection

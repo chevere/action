@@ -15,6 +15,7 @@ namespace Chevere\Action\Interfaces;
 
 use Chevere\Parameter\Interfaces\CastInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
+use ReflectionMethod;
 
 /**
  * Describes the component in charge of defining a single logic action.
@@ -36,4 +37,9 @@ interface ActionInterface
      * Determines main method to use.
      */
     public static function mainMethod(): string;
+
+    /**
+     * @return array<ReflectionMethod|ParameterInterface>
+     */
+    public static function assert(): array;
 }
