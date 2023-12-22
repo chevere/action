@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use ArgumentCountError;
+use Chevere\Action\Exceptions\ActionException;
 use Chevere\Tests\src\ActionTestAction;
 use Chevere\Tests\src\ActionTestArrayAccessReturnType;
 use Chevere\Tests\src\ActionTestAttributes;
@@ -29,8 +29,6 @@ use Chevere\Tests\src\ActionTestPrivateScope;
 use Chevere\Tests\src\ActionTestReturnExtraArguments;
 use Chevere\Tests\src\ActionTestUnionReturnMissingType;
 use Chevere\Tests\src\ActionTestUnionReturnType;
-use Error;
-use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -56,15 +54,24 @@ final class ActionTest extends TestCase
     public function testInvalidRunParameter(): void
     {
         $action = new ActionTestMethodParameterMissingType();
-        $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('$mixed');
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            Chevere\Tests\src\ActionTestMethodParameterMissingType::main → TypeError Missing type declaration for parameter `\$mixed`
+            PLAIN
+        );
         $action->__invoke();
     }
 
     public function testReturnExtraArguments(): void
     {
         $action = new ActionTestReturnExtraArguments();
-        $this->expectException(ArgumentCountError::class);
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            Chevere\Tests\src\ActionTestReturnExtraArguments::main → ArgumentCountError Invalid argument(s) provided: `id, extra`
+            PLAIN
+        );
         $action->__invoke();
     }
 
@@ -78,7 +85,12 @@ final class ActionTest extends TestCase
     public function testGenericResponseError(): void
     {
         $action = new ActionTestGenericResponseError();
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            Chevere\Tests\src\ActionTestGenericResponseError::main → InvalidArgumentException [_V *generic]: Chevere\Parameter\IntParameter::__invoke(): Argument #1 (\$value) must be of type int, string given
+            PLAIN
+        );
         $action->__invoke();
     }
 
@@ -112,7 +124,7 @@ final class ActionTest extends TestCase
     public function testPrivateScope(): void
     {
         $action = new ActionTestPrivateScope();
-        $this->expectException(Error::class);
+        $this->expectException(LogicException::class);
         $action->__invoke();
     }
 
@@ -157,10 +169,10 @@ final class ActionTest extends TestCase
     {
         $action = new ActionTestAttributes();
         $this->assertSame(1, $action->__invoke(value: 'ab')->int());
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestAttributes::main` → [value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
+            Chevere\Tests\src\ActionTestAttributes::main → InvalidArgumentException [value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
             PLAIN
         );
         $action->__invoke(value: 'ac');

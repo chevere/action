@@ -14,6 +14,25 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/MyAction.php';
 
+$arguments = [
+    'ok',
+    'ok muy bueno',
+    'ko',
+    'ok malo pero por muy largo',
+];
 $action = new MyAction();
-$result = $action('ok muy bueno');
-echo $result->int() . PHP_EOL;
+foreach ($arguments as $argument) {
+    try {
+        $return = $action($argument);
+        $return = $return->int();
+        echo <<<PLAIN
+        [OK] argument:{$argument} | return:{$return}
+
+        PLAIN;
+    } catch (Throwable $e) {
+        echo <<<PLAIN
+        [ER] argument:{$argument} | exception:{$e->getMessage()}
+
+        PLAIN;
+    }
+}

@@ -28,6 +28,6 @@ class MyAction implements ActionInterface
         #[StringAttr('/^ok/')]
         string $value
     ): int {
-        return 100;
+        return mb_strlen($value) * 5;
     }
 }

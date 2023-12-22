@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Action\Traits;
 
+use Chevere\Action\Exceptions\ActionException;
 use Chevere\Parameter\Attributes\ReturnAttr;
 use Chevere\Parameter\Cast;
 use Chevere\Parameter\Interfaces\CastInterface;
@@ -50,15 +51,23 @@ trait ActionTrait
 
         try {
             $arguments = $this->parameters()->__invoke(...$argument);
-        } catch (Throwable $e) {
-            throw new ($e::class)($this->getInvokeErrorMessage($e));
-        }
-        $run = $this->main(...$arguments->toArray());
-
-        try {
+            $run = $this->main(...$arguments->toArray());
             $return->__invoke($run);
         } catch (Throwable $e) {
-            throw new ($e::class)($this->getInvokeErrorMessage($e));
+            $message = (string) message(
+                '%method% → %exception% %message%',
+                exception: $e::class,
+                method: static::mainMethodFQN(),
+                message: $e->getMessage(),
+            );
+            $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
+
+            throw new ActionException(
+                $message,
+                $e,
+                $caller['file'] ?? 'na',
+                $caller['line'] ?? 0
+            );
         }
 
         return new Cast($run);
@@ -98,18 +107,6 @@ trait ActionTrait
         return [$reflection, $return];
     }
 
-    protected function getInvokeErrorMessage(Throwable $e): string
-    {
-        $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
-
-        return (string) message(
-            '`%method%` → %message% at %fileLine%',
-            method: static::mainMethodFQN(),
-            message: $e->getMessage(),
-            fileLine: $caller['file'] . ':' . $caller['line']
-        );
-    }
-
     /**
      * @return array<object> [$reflection, $return]
      */
@@ -118,13 +115,22 @@ trait ActionTrait
         if (! method_exists(static::class, static::mainMethod())) {
             throw new LogicException(
                 (string) message(
-                    'Action `%action%` does not define `%run%` method',
+                    'Action `%action%` does not define `%main%` method',
                     action: static::class,
-                    run: static::mainMethod(),
+                    main: static::mainMethod(),
                 )
             );
         }
         $reflection = new ReflectionMethod(static::class, static::mainMethod());
+        if ($reflection->isPrivate()) {
+            throw new LogicException(
+                (string) message(
+                    "Action `%action%` `%main%` method can't be private",
+                    action: static::class,
+                    main: static::mainMethod(),
+                )
+            );
+        }
         $attributes = $reflection->getAttributes(ReturnAttr::class);
         if ($attributes === []) {
             $return = static::return();
