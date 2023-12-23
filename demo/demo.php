@@ -26,12 +26,12 @@ foreach ($arguments as $argument) {
         $return = $action($argument);
         $return = $return->int();
         echo <<<PLAIN
-        [OK] argument:{$argument} | return:{$return}
+        [OK] argument:{$argument} \n     return:{$return}
 
         PLAIN;
     } catch (Throwable $e) {
         echo <<<PLAIN
-        [ER] argument:{$argument} | exception:{$e->getMessage()}
+        [ER] argument:{$argument} \n     error:{$e->getMessage()}
 
         PLAIN;
     }

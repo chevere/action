@@ -20,19 +20,23 @@
 
 ## Summary
 
-Action provides an object-oriented convention for working with [Parameter](https://github.com/chevere/parameter). The convention is the implementation of `ActionInterface` and the usage of `main` method to define class main logic.
+Action provides an object-oriented convention for working with [Parameter](https://github.com/chevere/parameter). This package enables to easily add more robust I/O validation to any PHP software.
 
 ## Quick start
 
-Install with [Composer](https://packagist.org/packages/chevere/action)
+Install with [Composer](https://packagist.org/packages/chevere/action).
 
 ```sh
 composer require chevere/action
 ```
 
+To follow the convention implement the [ActionInterface](src/interfaces/ActionInterface.php). You can either [Use ActionTrait](#use-actiontrait) or [Extend Action](#extend-action) to quickly start working with this.
+
 ## Cookbook
 
-* Create an action by using `ActionTrait`:
+### Use ActionTrait
+
+Create an action by using [ActionTrait](src/Traits/ActionTrait.php).
 
 ```php
 use Chevere\Action\Interfaces\ActionInterface;
@@ -45,7 +49,9 @@ class MyAction implements ActionInterface
 }
 ```
 
-* (Alternative) Create an action by extending `Action`:
+### Extend Action
+
+Create an Action by extending [Action](src/Action.php).
 
 ```php
 use Chevere\Action\Action;
@@ -56,25 +62,52 @@ class MyAction extends Action
 }
 ```
 
-* Use the `main` method to validate your action's main logic using **attributes** on parameters and method return:
+### Main logic
+
+Use the `main` method to determine your action's main logic. Use **attributes** from [chevere/parameter](https://github.com/chevere/parameter) on arguments and method return to add validation rules.
+
+* Before validation rules:
+
+```php
+use Chevere\Action\Action;
+
+class MyAction extends Action
+{
+    protected function main(
+        string $value
+    ): int
+    {
+        return mb_strlen($value) * 5;
+    }
+}
+```
+
+* After validation rules:
 
 ```php
 use Chevere\Parameter\Attributes\IntAttr;
 use Chevere\Parameter\Attributes\ReturnAttr;
+use Chevere\Action\Action;
 
-#[ReturnAttr(
-    new IntAttr(min: 0, max: 100)
-)]
-protected function main(
-    #[StringAttr('/^ok/')]
-    string $value
-): int
+class MyAction extends Action
 {
-    return 10;
+    #[ReturnAttr(
+        new IntAttr(min: 0, max: 100)
+    )]
+    protected function main(
+        #[StringAttr('/^ok/')]
+        string $value
+    ): int {
+        return mb_strlen($value) * 5;
+    }
 }
 ```
 
-* **Invoke** the action passing the `main` arguments to validate arguments and return:
+## Trigger validation
+
+Invoke your action main logic by passing the arguments you would pass to `main`. Action internally will validate arguments and return against all defined rules.
+
+💡 You can toy with this by running `php demo/demo.php`
 
 ```php
 $action = new MyAction();

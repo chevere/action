@@ -14,16 +14,15 @@ declare(strict_types=1);
 namespace Chevere\Action\Exceptions;
 
 use Exception;
-use Throwable;
 
 /**
- * Exception thrown at action __invoke.
+ * Exception thrown at action __invoke on I/O.
  */
 final class ActionException extends Exception
 {
-    public function __construct(string $message, Throwable $previous, string $file, int $line)
+    public function __construct(string $message, string $file, int $line)
     {
-        parent::__construct(message: $message, previous: $previous);
+        parent::__construct(message: $message);
         $this->file = $file;
         $this->line = $line;
     }

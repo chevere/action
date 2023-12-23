@@ -51,29 +51,21 @@ trait ActionTrait
 
         try {
             $arguments = $this->parameters()
-                ->__invoke(
-                    ...$argument
-                );
-            $run = $this->main(
-                ...$arguments->toArray()
-            );
-            $return->__invoke($run);
+                ->__invoke(...$argument);
         } catch (Throwable $e) {
-            $message = (string) message(
-                '%method% → %exception% %message%',
-                exception: $e::class,
-                method: static::mainMethodFQN(),
-                message: $e->getMessage(),
-            );
-            // @infection-ignore-all
-            $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
-
             // @infection-ignore-all
             throw new ActionException(
-                $message,
-                $e,
-                $caller['file'] ?? 'na',
-                $caller['line'] ?? 0
+                ...$this->getExceptionArguments($e),
+            );
+        }
+        $run = $this->main(...$arguments->toArray());
+
+        try {
+            $return->__invoke($run);
+        } catch (Throwable $e) {
+            // @infection-ignore-all
+            throw new ActionException(
+                ...$this->getExceptionArguments($e),
             );
         }
 
@@ -231,5 +223,25 @@ trait ActionTrait
                 )
             );
         }
+    }
+
+    // @phpstan-ignore-next-line
+    private function getExceptionArguments(Throwable $e): array
+    {
+        // @infection-ignore-all
+        $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
+
+        $message = (string) message(
+            '%method% → %exception% %message%',
+            exception: $e::class,
+            method: static::mainMethodFQN(),
+            message: $e->getMessage(),
+        );
+
+        return [
+            $message,
+            $caller['file'] ?? 'na',
+            $caller['line'] ?? 0,
+        ];
     }
 }
