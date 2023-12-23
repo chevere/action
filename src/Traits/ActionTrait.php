@@ -50,8 +50,13 @@ trait ActionTrait
         $this->assertRuntime($reflection, $return);
 
         try {
-            $arguments = $this->parameters()->__invoke(...$argument);
-            $run = $this->main(...$arguments->toArray());
+            $arguments = $this->parameters()
+                ->__invoke(
+                    ...$argument
+                );
+            $run = $this->main(
+                ...$arguments->toArray()
+            );
             $return->__invoke($run);
         } catch (Throwable $e) {
             $message = (string) message(
@@ -60,8 +65,10 @@ trait ActionTrait
                 method: static::mainMethodFQN(),
                 message: $e->getMessage(),
             );
+            // @infection-ignore-all
             $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
 
+            // @infection-ignore-all
             throw new ActionException(
                 $message,
                 $e,

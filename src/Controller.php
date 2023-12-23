@@ -26,6 +26,7 @@ abstract class Controller implements ControllerInterface
 {
     use ActionTrait;
 
+    // @infection-ignore-all
     protected static function assertStatic(
         ReflectionMethod $reflection,
         ParameterInterface $return

@@ -32,6 +32,7 @@ use Chevere\Tests\src\ActionTestUnionReturnType;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
+use Throwable;
 use TypeError;
 
 final class ActionTest extends TestCase
@@ -54,12 +55,21 @@ final class ActionTest extends TestCase
     public function testInvalidRunParameter(): void
     {
         $action = new ActionTestMethodParameterMissingType();
+
+        try {
+            $line = __LINE__ + 1;
+            $action->__invoke();
+        } catch (Throwable $e) {
+            $this->assertSame(__FILE__, $e->getFile());
+            $this->assertSame($line, $e->getLine());
+        }
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
             Chevere\Tests\src\ActionTestMethodParameterMissingType::main → TypeError Missing type declaration for parameter `\$mixed`
             PLAIN
         );
+
         $action->__invoke();
     }
 
