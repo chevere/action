@@ -14,21 +14,18 @@ declare(strict_types=1);
 namespace Chevere\Action\Traits;
 
 use Chevere\Action\Exceptions\ActionException;
-use Chevere\Parameter\Attributes\ReturnAttr;
+use Chevere\Action\Interfaces\ReflectionActionInterface;
+use Chevere\Action\ReflectionAction;
 use Chevere\Parameter\Cast;
 use Chevere\Parameter\Interfaces\CastInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\UnionParameterInterface;
-use LogicException;
-use ReflectionMethod;
 use ReflectionNamedType;
 use Throwable;
 use TypeError;
-use function Chevere\Action\getParameters;
 use function Chevere\Message\message;
 use function Chevere\Parameter\mixed;
-use function Chevere\Parameter\reflectionToReturnParameter;
 
 /**
  * @method mixed main()
@@ -41,16 +38,11 @@ trait ActionTrait
 
     final public function __invoke(mixed ...$argument): CastInterface
     {
-        /**
-         * @var ReflectionMethod $reflection
-         * @var ParameterInterface $return
-         */
-        [$reflection, $return] = static::assert();
-        // @infection-ignore-all
-        $this->assertRuntime($reflection, $return);
-
         try {
-            $arguments = $this->parameters()
+            $reflection = static::assert();
+            // @infection-ignore-all
+            $this->assertRuntime($reflection);
+            $arguments = $reflection->parameters()
                 ->__invoke(...$argument);
         } catch (Throwable $e) {
             // @infection-ignore-all
@@ -61,7 +53,8 @@ trait ActionTrait
         $run = $this->main(...$arguments->toArray());
 
         try {
-            $return->__invoke($run);
+            $reflection->return()
+                ->__invoke($run);
         } catch (Throwable $e) {
             // @infection-ignore-all
             throw new ActionException(
@@ -82,85 +75,29 @@ trait ActionTrait
         return 'main';
     }
 
-    /**
-     * @return array<ReflectionMethod|ParameterInterface>
-     */
-    public static function assert(): array
+    final public static function assert(): ReflectionActionInterface
     {
-        /**
-         * @var ReflectionMethod $reflection
-         * @var ParameterInterface $return
-         */
-        [$reflection, $return] = static::assertMethod();
+        $reflection = new ReflectionAction(static::class);
         /**
          * @var ?ReflectionNamedType $returnType
          * @phpstan-ignore-next-line
          */
-        $returnType = $reflection->getReturnType();
+        $returnType = $reflection->method()->getReturnType();
         if ($returnType !== null) {
             // @phpstan-ignore-next-line
-            static::assertTypes($returnType, $return);
+            static::assertTypes($returnType, $reflection->return());
         }
-        static::assertStatic($reflection, $return);
+        static::assertStatic($reflection);
 
-        return [$reflection, $return];
-    }
-
-    /**
-     * @return array<object> [$reflection, $return]
-     */
-    final protected static function assertMethod(): array
-    {
-        if (! method_exists(static::class, static::mainMethod())) {
-            throw new LogicException(
-                (string) message(
-                    'Action `%action%` does not define `%main%` method',
-                    action: static::class,
-                    main: static::mainMethod(),
-                )
-            );
-        }
-        $reflection = new ReflectionMethod(static::class, static::mainMethod());
-        if ($reflection->isPrivate()) {
-            throw new LogicException(
-                (string) message(
-                    "Action `%action%` `%main%` method can't be private",
-                    action: static::class,
-                    main: static::mainMethod(),
-                )
-            );
-        }
-        $attributes = $reflection->getAttributes(ReturnAttr::class);
-        if ($attributes === []) {
-            $return = static::return();
-        } else {
-            $return = reflectionToReturnParameter($reflection);
-        }
-        if (! $reflection->hasReturnType()) {
-            if ($return->type()->typeHinting() === 'null') {
-                return [$reflection, $return];
-            }
-
-            throw new TypeError(
-                (string) message(
-                    'Method `%method%` must declare `%type%` return type',
-                    method: static::mainMethodFQN(),
-                    type: $return->type()->typeHinting(),
-                )
-            );
-        }
-
-        return [$reflection, $return];
+        return $reflection;
     }
 
     /**
      * Enables to define extra parameter assertion before the run method is called.
      * @codeCoverageIgnore
      */
-    protected static function assertStatic(
-        ReflectionMethod $reflection,
-        ParameterInterface $return
-    ): void {
+    protected static function assertStatic(ReflectionActionInterface $reflection): void
+    {
         // enables extra static assertion
     }
 
@@ -168,20 +105,9 @@ trait ActionTrait
      * Enables to define extra parameter assertion before the run method is called.
      * @codeCoverageIgnore
      */
-    protected function assertRuntime(
-        ReflectionMethod $reflection,
-        ParameterInterface $return
-    ): void {
-        // enables extra runtime assertion
-    }
-
-    final protected function parameters(): ParametersInterface
+    protected function assertRuntime(ReflectionActionInterface $reflection): void
     {
-        if ($this->parameters === null) {
-            $this->parameters = getParameters(static::class);
-        }
-
-        return $this->parameters;
+        // enables extra runtime assertion
     }
 
     final protected static function mainMethodFQN(): string
@@ -232,14 +158,16 @@ trait ActionTrait
         $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
 
         $message = (string) message(
-            '%method% → %exception% %message%',
+            '`%action%` %exception% → %message%',
             exception: $e::class,
-            method: static::mainMethodFQN(),
+            action: static::class,
+            method: static::mainMethod(),
             message: $e->getMessage(),
         );
 
         return [
             $message,
+            $e,
             $caller['file'] ?? 'na',
             $caller['line'] ?? 0,
         ];

@@ -30,7 +30,7 @@ Install with [Composer](https://packagist.org/packages/chevere/action).
 composer require chevere/action
 ```
 
-To follow the convention implement the [ActionInterface](src/interfaces/ActionInterface.php). You can either [Use ActionTrait](#use-actiontrait) or [Extend Action](#extend-action) to quickly start working with this.
+To follow the convention implement the [ActionInterface](src/Interfaces/ActionInterface.php). You can either [Use ActionTrait](#use-actiontrait) or [Extend Action](#extend-action) to quickly start working with this.
 
 ## Cookbook
 

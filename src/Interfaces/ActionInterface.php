@@ -15,7 +15,6 @@ namespace Chevere\Action\Interfaces;
 
 use Chevere\Parameter\Interfaces\CastInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
-use ReflectionMethod;
 
 /**
  * Describes the component in charge of defining a single logic action.
@@ -24,22 +23,22 @@ use ReflectionMethod;
 interface ActionInterface
 {
     /**
-     * Retrieves `main` return validated against all rules.
+     * Run `main` for `...$argument` validating all I/O rules.
      */
     public function __invoke(mixed ...$argument): CastInterface;
 
     /**
-     * Defines expected return parameter when executing target main method.
+     * Defines expected return parameter validation for main method.
      */
     public static function return(): ParameterInterface;
 
     /**
-     * Determines main method to use.
+     * Defines main method to use.
      */
     public static function mainMethod(): string;
 
     /**
-     * @return array<ReflectionMethod|ParameterInterface>
+     * Asserts action rules coherence.
      */
-    public static function assert(): array;
+    public static function assert(): ReflectionActionInterface;
 }

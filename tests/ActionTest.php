@@ -29,18 +29,20 @@ use Chevere\Tests\src\ActionTestPrivateScope;
 use Chevere\Tests\src\ActionTestReturnExtraArguments;
 use Chevere\Tests\src\ActionTestUnionReturnMissingType;
 use Chevere\Tests\src\ActionTestUnionReturnType;
-use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
-use Throwable;
-use TypeError;
 
 final class ActionTest extends TestCase
 {
     public function testMissingMainMethod(): void
     {
         $action = new ActionTestMissingRun();
-        $this->expectException(LogicException::class);
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            `Chevere\Tests\src\ActionTestMissingRun` LogicException → Action does not define a `main` method
+            PLAIN
+        );
         $action->__invoke();
     }
 
@@ -52,25 +54,11 @@ final class ActionTest extends TestCase
         $this->assertSame($expected, $string);
     }
 
-    public function testInvalidRunParameter(): void
+    public function testNoTypeParameter(): void
     {
         $action = new ActionTestMethodParameterMissingType();
-
-        try {
-            $line = __LINE__ + 1;
-            $action->__invoke();
-        } catch (Throwable $e) {
-            $this->assertSame(__FILE__, $e->getFile());
-            $this->assertSame($line, $e->getLine());
-        }
-        $this->expectException(ActionException::class);
-        $this->expectExceptionMessage(
-            <<<PLAIN
-            Chevere\Tests\src\ActionTestMethodParameterMissingType::main → TypeError Missing type declaration for parameter `\$mixed`
-            PLAIN
-        );
-
-        $action->__invoke();
+        $this->expectNotToPerformAssertions();
+        $action->__invoke('mixed');
     }
 
     public function testReturnExtraArguments(): void
@@ -79,7 +67,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Chevere\Tests\src\ActionTestReturnExtraArguments::main → ArgumentCountError Invalid argument(s) provided: `id, extra`
+            `Chevere\Tests\src\ActionTestReturnExtraArguments` ArgumentCountError → Invalid argument(s) provided: `id, extra`
             PLAIN
         );
         $action->__invoke();
@@ -98,7 +86,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Chevere\Tests\src\ActionTestGenericResponseError::main → InvalidArgumentException [_V *generic]: Chevere\Parameter\IntParameter::__invoke(): Argument #1 (\$value) must be of type int, string given
+            `Chevere\Tests\src\ActionTestGenericResponseError` InvalidArgumentException → [_V *generic]: Chevere\Parameter\IntParameter::__invoke(): Argument #1 (\$value) must be of type int, string given
             PLAIN
         );
         $action->__invoke();
@@ -115,7 +103,7 @@ final class ActionTest extends TestCase
     {
         $action = new ActionTestUnionReturnMissingType();
         $class = $action::class;
-        $this->expectException(TypeError::class);
+        $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
             Method `{$class}::main` must declare `string|int` return type
@@ -134,7 +122,7 @@ final class ActionTest extends TestCase
     public function testPrivateScope(): void
     {
         $action = new ActionTestPrivateScope();
-        $this->expectException(LogicException::class);
+        $this->expectException(ActionException::class);
         $action->__invoke();
     }
 
@@ -149,10 +137,10 @@ final class ActionTest extends TestCase
     {
         $action = new ActionTestNoReturnTypeError();
         $class = $action::class;
-        $this->expectException(TypeError::class);
+        $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Method `{$class}::main` must declare `array` return type
+            `Chevere\Tests\src\ActionTestNoReturnTypeError` TypeError → Method `main` must declare `array` return type
             PLAIN
         );
         $action->__invoke();
@@ -182,7 +170,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Chevere\Tests\src\ActionTestAttributes::main → InvalidArgumentException [value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
+            `Chevere\Tests\src\ActionTestAttributes` InvalidArgumentException → [value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
             PLAIN
         );
         $action->__invoke(value: 'ac');
