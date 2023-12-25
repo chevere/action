@@ -106,7 +106,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Method `{$class}::main` must declare `string|int` return type
+            `Chevere\Tests\src\ActionTestUnionReturnMissingType` TypeError → Action `main` method must declare `string|int` return type
             PLAIN
         );
         $action->__invoke();
@@ -140,7 +140,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestNoReturnTypeError` TypeError → Method `main` must declare `array` return type
+            `Chevere\Tests\src\ActionTestNoReturnTypeError` TypeError → Action `main` method must declare `array` return type
             PLAIN
         );
         $action->__invoke();

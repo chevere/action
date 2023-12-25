@@ -18,8 +18,10 @@ use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Parameter\Attributes\ReturnAttr;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
+use Chevere\Parameter\Interfaces\UnionParameterInterface;
 use LogicException;
 use ReflectionMethod;
+use ReflectionNamedType;
 use TypeError;
 use function Chevere\Message\message;
 use function Chevere\Parameter\reflectionToParameters;
@@ -33,8 +35,9 @@ final class ReflectionAction implements ReflectionActionInterface
 
     private ParameterInterface $return;
 
-    public function __construct(string $action)
-    {
+    public function __construct(
+        private string $action
+    ) {
         if (! class_exists($action)) {
             throw new LogicException(
                 (string) message(
@@ -84,12 +87,13 @@ final class ReflectionAction implements ReflectionActionInterface
 
             throw new TypeError(
                 (string) message(
-                    'Method `%method%` must declare `%type%` return type',
+                    'Action `%method%` method must declare `%type%` return type',
                     method: $action::mainMethod(),
                     type: $this->return->type()->typeHinting(),
                 )
             );
         }
+        $this->assertReturn();
     }
 
     public function method(): ReflectionMethod
@@ -105,5 +109,41 @@ final class ReflectionAction implements ReflectionActionInterface
     public function return(): ParameterInterface
     {
         return $this->return;
+    }
+
+    private function assertReturn(): void
+    {
+        /** @var ReflectionNamedType $returnType */
+        $returnType = $this->method->getReturnType();
+        $returnName = $returnType->getName();
+        $expectName = $this->return->type()->typeHinting();
+        $return = match ($returnName) {
+            'void' => 'null',
+            'ArrayAccess' => 'array',
+            default => $returnName,
+        };
+        $expect = [];
+        if ($this->return instanceof UnionParameterInterface) {
+            foreach ($this->return->parameters() as $parameter) {
+                $expect[] = $parameter->type()->typeHinting();
+            }
+        } else {
+            $expect[] = match ($expectName) {
+                'generic' => 'array',
+                default => $expectName,
+            };
+        }
+        if (in_array('mixed', $expect, true)) {
+            return;
+        }
+        if (! in_array($return, $expect, true)) {
+            throw new TypeError(
+                (string) message(
+                    'Action `%main%` method must declare `%type%` return type',
+                    main: $this->action::mainMethod(),
+                    type: implode('|', $expect),
+                )
+            );
+        }
     }
 }

@@ -20,10 +20,7 @@ use Chevere\Parameter\Cast;
 use Chevere\Parameter\Interfaces\CastInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
-use Chevere\Parameter\Interfaces\UnionParameterInterface;
-use ReflectionNamedType;
 use Throwable;
-use TypeError;
 use function Chevere\Message\message;
 use function Chevere\Parameter\mixed;
 
@@ -78,15 +75,6 @@ trait ActionTrait
     final public static function assert(): ReflectionActionInterface
     {
         $reflection = new ReflectionAction(static::class);
-        /**
-         * @var ?ReflectionNamedType $returnType
-         * @phpstan-ignore-next-line
-         */
-        $returnType = $reflection->method()->getReturnType();
-        if ($returnType !== null) {
-            // @phpstan-ignore-next-line
-            static::assertTypes($returnType, $reflection->return());
-        }
         static::assertStatic($reflection);
 
         return $reflection;
@@ -113,42 +101,6 @@ trait ActionTrait
     final protected static function mainMethodFQN(): string
     {
         return static::class . '::' . static::mainMethod();
-    }
-
-    final protected static function assertTypes(
-        ReflectionNamedType $reflection,
-        ParameterInterface $parameter
-    ): void {
-        $returnName = $reflection->getName();
-        $expectName = $parameter->type()->typeHinting();
-        $return = match ($returnName) {
-            'void' => 'null',
-            'ArrayAccess' => 'array',
-            default => $returnName,
-        };
-        $expect = [];
-        if ($parameter instanceof UnionParameterInterface) {
-            foreach ($parameter->parameters() as $parameter) {
-                $expect[] = $parameter->type()->typeHinting();
-            }
-        } else {
-            $expect[] = match ($expectName) {
-                'generic' => 'array',
-                default => $expectName,
-            };
-        }
-        if (in_array('mixed', $expect, true)) {
-            return;
-        }
-        if (! in_array($return, $expect, true)) {
-            throw new TypeError(
-                (string) message(
-                    'Method `%method%` must declare `%type%` return type',
-                    method: static::mainMethodFQN(),
-                    type: implode('|', $expect),
-                )
-            );
-        }
     }
 
     // @phpstan-ignore-next-line
