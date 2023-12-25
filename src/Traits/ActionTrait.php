@@ -117,6 +117,7 @@ trait ActionTrait
             message: $e->getMessage(),
         );
 
+        // @infection-ignore-all
         return [
             $message,
             $e,

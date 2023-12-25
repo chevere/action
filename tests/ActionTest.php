@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Tests\src\ActionTestAction;
 use Chevere\Tests\src\ActionTestArrayAccessReturnType;
+use Chevere\Tests\src\ActionTestAssertStatic;
 use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
 use Chevere\Tests\src\ActionTestGenericResponse;
@@ -40,7 +41,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestMissingRun` LogicException → Action does not define a `main` method
+            `Chevere\Tests\src\ActionTestMissingRun` LogicException → Action doesn't define a `main` method
             PLAIN
         );
         $action->__invoke();
@@ -174,5 +175,21 @@ final class ActionTest extends TestCase
             PLAIN
         );
         $action->__invoke(value: 'ac');
+    }
+
+    public function testAssert(): void
+    {
+        $action = new ActionTestAssertStatic();
+        $this->assertFalse($action::isAsserted());
+        $action::assert();
+        $this->assertTrue($action::isAsserted());
+    }
+
+    public function testAssertInvoke(): void
+    {
+        $action = new ActionTestAssertStatic();
+        $this->assertFalse($action::isAsserted());
+        $action->__invoke();
+        $this->assertTrue($action::isAsserted());
     }
 }

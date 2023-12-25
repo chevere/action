@@ -40,16 +40,14 @@ final class ReflectionAction implements ReflectionActionInterface
     ) {
         if (! class_exists($action)) {
             throw new LogicException(
-                (string) message(
-                    'Action does not exist',
-                )
+                (string) message("Action doesn't exists")
             );
         }
         $interfaces = class_implements($action) ?: [];
         if (! in_array(ActionInterface::class, $interfaces, true)) {
             throw new LogicException(
                 (string) message(
-                    'Action does not implement `%interface%`',
+                    "Action doesn't implement `%interface%`",
                     interface: ActionInterface::class,
                 )
             );
@@ -60,7 +58,7 @@ final class ReflectionAction implements ReflectionActionInterface
         if (! method_exists($action, $action::mainMethod())) {
             throw new LogicException(
                 (string) message(
-                    'Action does not define a `%main%` method',
+                    "Action doesn't define a `%main%` method",
                     main: $action::mainMethod(),
                 )
             );
