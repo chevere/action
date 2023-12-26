@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Chevere\Action\Interfaces;
 
-use Chevere\Parameter\Interfaces\CastInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 
 /**
@@ -25,7 +24,7 @@ interface ActionInterface
     /**
      * Run `main` for `...$argument` validating all I/O rules.
      */
-    public function __invoke(mixed ...$argument): CastInterface;
+    public function __invoke(mixed ...$argument): mixed;
 
     /**
      * Defines expected return parameter validation for main method.

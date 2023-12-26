@@ -51,7 +51,7 @@ final class ActionTest extends TestCase
     {
         $expected = 'PeoplesHernandez';
         $action = new ActionTestController();
-        $string = $action->__invoke(name: $expected)->string();
+        $string = $action->__invoke(name: $expected);
         $this->assertSame($expected, $string);
     }
 
@@ -167,7 +167,7 @@ final class ActionTest extends TestCase
     public function testAttributeValidation(): void
     {
         $action = new ActionTestAttributes();
-        $this->assertSame(1, $action->__invoke(value: 'ab')->int());
+        $this->assertSame(1, $action->__invoke(value: 'ab'));
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN

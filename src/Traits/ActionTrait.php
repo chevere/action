@@ -16,8 +16,6 @@ namespace Chevere\Action\Traits;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Action\ReflectionAction;
-use Chevere\Parameter\Cast;
-use Chevere\Parameter\Interfaces\CastInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Throwable;
@@ -33,7 +31,7 @@ trait ActionTrait
 
     protected ?ParameterInterface $return = null;
 
-    final public function __invoke(mixed ...$argument): CastInterface
+    final public function __invoke(mixed ...$argument): mixed
     {
         try {
             $reflection = static::assert();
@@ -59,7 +57,7 @@ trait ActionTrait
             );
         }
 
-        return new Cast($run);
+        return $run;
     }
 
     public static function return(): ParameterInterface
