@@ -15,8 +15,8 @@ namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
 use Chevere\Parameter\Attributes\IntAttr;
+use Chevere\Parameter\Attributes\RegexAttr;
 use Chevere\Parameter\Attributes\ReturnAttr;
-use Chevere\Parameter\Attributes\StringAttr;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use function Chevere\Parameter\string;
 
@@ -29,7 +29,7 @@ final class ActionTestAttributes extends Action
 
     #[ReturnAttr(new IntAttr(min: 1))]
     protected function main(
-        #[StringAttr('/^ab$/')]
+        #[RegexAttr('/^ab$/')]
         string $value
     ): int {
         return 1;

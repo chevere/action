@@ -14,8 +14,8 @@ declare(strict_types=1);
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\Traits\ActionTrait;
 use Chevere\Parameter\Attributes\IntAttr;
+use Chevere\Parameter\Attributes\RegexAttr;
 use Chevere\Parameter\Attributes\ReturnAttr;
-use Chevere\Parameter\Attributes\StringAttr;
 
 class MyAction implements ActionInterface
 {
@@ -25,7 +25,7 @@ class MyAction implements ActionInterface
         new IntAttr(min: 0, max: 100)
     )]
     protected function main(
-        #[StringAttr('/^ok/')]
+        #[RegexAttr('/^ok/')]
         string $value
     ): int {
         return mb_strlen($value) * 5;

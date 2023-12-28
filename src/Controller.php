@@ -16,6 +16,7 @@ namespace Chevere\Action;
 use Chevere\Action\Interfaces\ControllerInterface;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Action\Traits\ActionTrait;
+use Chevere\Parameter\Interfaces\RegexParameterInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use InvalidArgumentException;
 use function Chevere\Message\message;
@@ -31,7 +32,9 @@ abstract class Controller implements ControllerInterface
         $invalid = [];
         $parameters = reflectionToParameters($reflection->method());
         foreach ($parameters as $name => $parameter) {
-            if (! ($parameter instanceof StringParameterInterface)) {
+            $isString = $parameter instanceof StringParameterInterface;
+            $isRegex = $parameter instanceof RegexParameterInterface;
+            if (! ($isString || $isRegex)) {
                 $invalid[] = $name;
             }
         }
