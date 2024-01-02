@@ -15,15 +15,15 @@ namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
 use Chevere\Parameter\Interfaces\ParameterInterface;
-use function Chevere\Parameter\generic;
 use function Chevere\Parameter\int;
+use function Chevere\Parameter\iterable;
 use function Chevere\Parameter\string;
 
-final class ActionTestGenericResponse extends Action
+final class ActionTestIterableResponseError extends Action
 {
     public static function return(): ParameterInterface
     {
-        return generic(
+        return iterable(
             V: int(),
             K: string()
         );
@@ -32,9 +32,9 @@ final class ActionTestGenericResponse extends Action
     protected function main(): array
     {
         return [
-            'id' => 123,
-            'id' => 124,
-            'id' => 125,
+            'a' => 123,
+            'b' => '124',
+            'c' => 125,
             // ...
         ];
     }

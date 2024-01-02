@@ -88,7 +88,7 @@ class MyAction extends Action
 use Chevere\Action\Action;
 use Chevere\Parameter\Attributes\IntAttr;
 use Chevere\Parameter\Attributes\ReturnAttr;
-use Chevere\Parameter\Attributes\RegexAttr;
+use Chevere\Parameter\Attributes\StringAttr;
 
 class MyAction extends Action
 {
@@ -96,7 +96,7 @@ class MyAction extends Action
         new IntAttr(min: 0, max: 100)
     )]
     protected function main(
-        #[RegexAttr('/^ok/')]
+        #[StringAttr('/^ok/')]
         string $value
     ): int {
         return mb_strlen($value) * 5;

@@ -18,16 +18,21 @@ use ArrayObject;
 use Chevere\Action\Action;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use function Chevere\Parameter\arrayp;
+use function Chevere\Parameter\int;
 
 final class ActionTestArrayAccessReturnType extends Action
 {
     public static function return(): ParameterInterface
     {
-        return arrayp();
+        return arrayp(
+            id: int(min: 1),
+        );
     }
 
     protected function main(): ArrayAccess
     {
-        return new ArrayObject([]);
+        return new ArrayObject([
+            'id' => 1,
+        ]);
     }
 }

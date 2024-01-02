@@ -111,29 +111,31 @@ final class ReflectionAction implements ReflectionActionInterface
 
     private function assertReturn(): void
     {
-        /** @var ReflectionNamedType $returnType */
-        $returnType = $this->method->getReturnType();
-        $returnName = $returnType->getName();
-        $expectName = $this->return->type()->typeHinting();
-        $return = match ($returnName) {
-            'void' => 'null',
-            'ArrayAccess' => 'array',
-            default => $returnName,
-        };
         $expect = [];
         if ($this->return instanceof UnionParameterInterface) {
             foreach ($this->return->parameters() as $parameter) {
                 $expect[] = $parameter->type()->typeHinting();
             }
         } else {
-            $expect[] = match ($expectName) {
-                'generic' => 'array',
-                default => $expectName,
-            };
+            $expect[] = $this->return->type()->typeHinting();
         }
         if (in_array('mixed', $expect, true)) {
             return;
         }
+        if (in_array('array', $expect, true)) {
+            $expect[] = 'ArrayAccess';
+        }
+        if (in_array('iterable', $expect, true)) {
+            $expect[] = 'array';
+            $expect[] = 'Traversable';
+        }
+        /** @var ReflectionNamedType $type */
+        $type = $this->method->getReturnType();
+        $typeName = $type->getName();
+        $return = match ($typeName) {
+            'void' => 'null',
+            default => $typeName,
+        };
         if (! in_array($return, $expect, true)) {
             throw new TypeError(
                 (string) message(

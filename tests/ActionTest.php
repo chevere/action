@@ -19,8 +19,8 @@ use Chevere\Tests\src\ActionTestArrayAccessReturnType;
 use Chevere\Tests\src\ActionTestAssertStatic;
 use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
-use Chevere\Tests\src\ActionTestGenericResponse;
-use Chevere\Tests\src\ActionTestGenericResponseError;
+use Chevere\Tests\src\ActionTestIterableResponse;
+use Chevere\Tests\src\ActionTestIterableResponseError;
 use Chevere\Tests\src\ActionTestMethodParameterMissingType;
 use Chevere\Tests\src\ActionTestMissingRun;
 use Chevere\Tests\src\ActionTestNoReturnTypeError;
@@ -74,20 +74,20 @@ final class ActionTest extends TestCase
         $action->__invoke();
     }
 
-    public function testGenericResponse(): void
+    public function testIterableResponse(): void
     {
-        $action = new ActionTestGenericResponse();
+        $action = new ActionTestIterableResponse();
         $this->expectNotToPerformAssertions();
         $action->__invoke();
     }
 
-    public function testGenericResponseError(): void
+    public function testIterableResponseError(): void
     {
-        $action = new ActionTestGenericResponseError();
+        $action = new ActionTestIterableResponseError();
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestGenericResponseError` InvalidArgumentException → [_V *generic]: Chevere\Parameter\IntParameter::__invoke(): Argument #1 (\$value) must be of type int, string given
+            `Chevere\Tests\src\ActionTestIterableResponseError` InvalidArgumentException → [_V *iterable]: Chevere\Parameter\IntParameter::__invoke(): Argument #1 (\$value) must be of type int, string given
             PLAIN
         );
         $action->__invoke();
