@@ -37,19 +37,17 @@ trait ActionTrait
             $reflection = static::assert();
             // @infection-ignore-all
             $this->assertRuntime($reflection);
-            $arguments = $reflection->parameters()
-                ->__invoke(...$argument);
+            $arguments = $reflection->parameters()->__invoke(...$argument);
         } catch (Throwable $e) {
             // @infection-ignore-all
             throw new ActionException(
                 ...$this->getExceptionArguments($e),
             );
         }
-        $run = $this->main(...$arguments->toArray());
+        $result = $this->main(...$arguments->toArray());
 
         try {
-            $reflection->return()
-                ->__invoke($run);
+            $reflection->return()->__invoke($result);
         } catch (Throwable $e) {
             // @infection-ignore-all
             throw new ActionException(
@@ -57,7 +55,7 @@ trait ActionTrait
             );
         }
 
-        return $run;
+        return $result;
     }
 
     public static function return(): ParameterInterface
@@ -106,12 +104,10 @@ trait ActionTrait
     {
         // @infection-ignore-all
         $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
-
         $message = (string) message(
-            '`%action%` %exception% → %message%',
+            '`%actor%` %exception% → %message%',
             exception: $e::class,
-            action: static::class,
-            method: static::mainMethod(),
+            actor: static::class,
             message: $e->getMessage(),
         );
 
