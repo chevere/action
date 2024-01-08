@@ -25,7 +25,7 @@ use ReflectionNamedType;
 use TypeError;
 use function Chevere\Message\message;
 use function Chevere\Parameter\reflectionToParameters;
-use function Chevere\Parameter\reflectionToReturnParameter;
+use function Chevere\Parameter\reflectionToReturn;
 
 final class ReflectionAction implements ReflectionActionInterface
 {
@@ -76,7 +76,7 @@ final class ReflectionAction implements ReflectionActionInterface
         $attributes = $this->method->getAttributes(ReturnAttr::class);
         $this->return = match (true) {
             $attributes === [] => $action::return(),
-            default => reflectionToReturnParameter($this->method),
+            default => reflectionToReturn($this->method),
         };
         if (! $this->method->hasReturnType()) {
             if ($this->return->type()->typeHinting() === 'null') {

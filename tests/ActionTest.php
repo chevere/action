@@ -87,7 +87,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestIterableResponseError` InvalidArgumentException → [_V *iterable]: Chevere\Parameter\IntParameter::__invoke(): Argument #1 (\$value) must be of type int, string given
+            `Chevere\Tests\src\ActionTestIterableResponseError` InvalidArgumentException → [V *iterable]: Argument #1 (\$value) must be of type int, string given
             PLAIN
         );
         $action->__invoke();

@@ -16,6 +16,7 @@ namespace Chevere\Action;
 use Chevere\Action\Interfaces\ControllerInterface;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Action\Traits\ActionTrait;
+use Chevere\Parameter\Interfaces\MixedParameterInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
 use InvalidArgumentException;
 use function Chevere\Message\message;
@@ -31,6 +32,9 @@ abstract class Controller implements ControllerInterface
         $invalid = [];
         $parameters = reflectionToParameters($reflection->method());
         foreach ($parameters as $name => $parameter) {
+            if ($parameter instanceof MixedParameterInterface) {
+                continue;
+            }
             if (! ($parameter instanceof StringParameterInterface)) {
                 $invalid[] = $name;
             }
@@ -38,11 +42,12 @@ abstract class Controller implements ControllerInterface
         if ($invalid === []) {
             return;
         }
+        $names = implode(', ', $invalid);
 
         throw new InvalidArgumentException(
             (string) message(
-                'Parameter `%parameters%` must be of type **%type%** for controller **%className%**',
-                parameters: implode(', ', $invalid),
+                'Parameter `%names%` must be of type **%type%** for controller `%className%`',
+                names: $names,
                 type: 'string',
                 className: static::class
             )

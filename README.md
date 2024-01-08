@@ -69,9 +69,7 @@ Use the `main` method to determine your action's main logic. Use **attributes** 
 * Before validation rules:
 
 ```php
-use Chevere\Action\Action;
-
-class MyAction extends Action
+class MyAction
 {
     protected function main(
         string $value
