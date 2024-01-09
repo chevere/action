@@ -1,6 +1,6 @@
 {
     "name": "chevere/action",
-    "description": "A chevere action package",
+    "description": "I/O convention on top of Parameter",
     "homepage": "https://chevere.org",
     "type": "library",
     "license": "Apache-2.0",
@@ -14,10 +14,9 @@
     "require": {
         "php": "^8.1",
         "chevere/message": "^1.0.0",
-        "chevere/parameter": "^1.0.x-dev"
+        "chevere/parameter": "^1.0.0"
     },
     "require-dev": {
-        "chevere/var-dump": "^0.10.x-dev",
         "phpstan/phpstan": "^1.9",
         "phpunit/phpunit": "^9.5",
         "symplify/easy-coding-standard": "^11.1"
