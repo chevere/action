@@ -18,19 +18,23 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=sqale_index)](https://sonarcloud.io/dashboard?id=chevere_action)
 [![CodeFactor](https://www.codefactor.io/repository/github/chevere/action/badge)](https://www.codefactor.io/repository/github/chevere/action)
 
+![Action](.github/banner/action-logo.svg)
+
 ## Summary
 
-Action provides an object-oriented convention for working with [Parameter](https://github.com/chevere/parameter), enabling to easily extend I/O validation to any PHP software.
+The Action package provides a I/O convention on top of [Parameter](https://chevere.org/packages/parameter).
 
-## Quick start
+## Installing
 
-Install with [Composer](https://packagist.org/packages/chevere/action).
+Action is available through [Packagist](https://packagist.org/packages/chevere/action) and the repository source is at [chevere/action](https://github.com/chevere/action).
 
 ```sh
 composer require chevere/action
 ```
 
-Implement [ActionInterface](src/interfaces/ActionInterface.php) by using the [Action trait](#use-actiontrait) or extending [Action class](#extend-action) .
+## Quick start
+
+Implement [ActionInterface](src/interfaces/ActionInterface.php) by using the [Action trait](#use-actiontrait) or by extending [Action abstract](#extend-action).
 
 ## Creating actions
 
@@ -161,13 +165,68 @@ public static function mainMethod(): string
 }
 ```
 
+## Controller
+
+The Controller component is a special type of Action in charge of handling incoming instructions. Its `main` method only takes parameters of type `string`.
+
+Controller is intended to use them wired to:
+
+* Web Servers
+* CLI applications
+* Application runners
+
+### Defining a Controller
+
+A Controller implements the `ControllerInterface`. You can extend `Controller` to quick create a compliant Controller:
+
+```php
+use Chevere\Controller\Controller;
+
+class SomeController extends Controller
+{
+    // ...
+}
+```
+
+### Main Parameters
+
+Parameters are defined in the `main` method but it just takes strings.
+
+```php
+public function main(
+    string $pepito,
+    string $paysTwice
+): array
+{
+    // ...
+}
+```
+
+## Parameter Attributes
+
+Use `StringAttr` to validate a string:
+
+```php
+use Chevere\Attributes\StringAttr;
+
+public function main(
+    #[StringAttr('/^[a-z]$/')]
+    string $pepito,
+    #[StringAttr('/^[a-zA-Z]+$/')]
+    string $paysTwice
+): array
+{
+    // ...
+}
+```
+
 ## Documentation
 
-Documentation is available at [chevere.org](https://chevere.org/).
+Documentation is available at [chevere.org](https://chevere.org/packages/action).
 
 ## License
 
-Copyright 2023 [Rodolfo Berrios A.](https://rodolfoberrios.com/)
+Copyright [Rodolfo Berrios A.](https://rodolfoberrios.com/)
 
 Chevere is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full license text.
 
