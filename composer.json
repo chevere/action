@@ -1,6 +1,6 @@
 {
     "name": "chevere/action",
-    "description": "I/O convention on top of Parameter",
+    "description": "Object oriented convention for working with Parameter",
     "homepage": "https://chevere.org",
     "type": "library",
     "license": "Apache-2.0",

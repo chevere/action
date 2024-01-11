@@ -47,7 +47,7 @@ trait ActionTrait
         $result = $this->main(...$arguments->toArray());
 
         try {
-            $reflection->return()->__invoke($result);
+            $reflection->return()->__invoke($run);
         } catch (Throwable $e) {
             // @infection-ignore-all
             throw new ActionException(

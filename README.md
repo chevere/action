@@ -22,7 +22,7 @@
 
 ## Summary
 
-The Action package provides a I/O convention on top of [Parameter](https://chevere.org/packages/parameter).
+Action provides an object oriented convention for working with [Parameter](https://github.com/chevere/parameter).
 
 ## Installing
 
