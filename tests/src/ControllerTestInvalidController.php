@@ -17,7 +17,7 @@ use Chevere\Action\Controller;
 
 final class ControllerTestInvalidController extends Controller
 {
-    protected function main(int $int): array
+    protected function main($mixed, int $int, int|string $var): array
     {
         return [];
     }

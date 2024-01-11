@@ -35,7 +35,6 @@ trait ActionTrait
     {
         try {
             $reflection = static::assert();
-            // @infection-ignore-all
             $this->assertRuntime($reflection);
             $arguments = $reflection->parameters()->__invoke(...$argument);
         } catch (Throwable $e) {
@@ -92,11 +91,6 @@ trait ActionTrait
     protected function assertRuntime(ReflectionActionInterface $reflection): void
     {
         // enables extra runtime assertion
-    }
-
-    final protected static function mainMethodFQN(): string
-    {
-        return static::class . '::' . static::mainMethod();
     }
 
     // @phpstan-ignore-next-line

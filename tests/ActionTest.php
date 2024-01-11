@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Tests\src\ActionTestAction;
 use Chevere\Tests\src\ActionTestArrayAccessReturnType;
+use Chevere\Tests\src\ActionTestAssertRuntimeAction;
 use Chevere\Tests\src\ActionTestAssertStatic;
 use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
@@ -191,5 +192,13 @@ final class ActionTest extends TestCase
         $this->assertFalse($action::isAsserted());
         $action->__invoke();
         $this->assertTrue($action::isAsserted());
+    }
+
+    public function testAssertRuntime(): void
+    {
+        $action = new ActionTestAssertRuntimeAction();
+        $this->assertFalse($action->flag());
+        $action->__invoke();
+        $this->assertTrue($action->flag());
     }
 }

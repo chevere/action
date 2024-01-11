@@ -16,28 +16,36 @@ namespace Chevere\Action;
 use Chevere\Action\Interfaces\ControllerInterface;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Action\Traits\ActionTrait;
-use Chevere\Parameter\Interfaces\MixedParameterInterface;
-use Chevere\Parameter\Interfaces\StringParameterInterface;
 use InvalidArgumentException;
+use ReflectionNamedType;
 use function Chevere\Message\message;
-use function Chevere\Parameter\reflectionToParameters;
 
 abstract class Controller implements ControllerInterface
 {
     use ActionTrait;
 
     // @infection-ignore-all
-    protected static function assertStatic(ReflectionActionInterface $reflection): void
-    {
+    protected static function assertStatic(
+        ReflectionActionInterface $reflection
+    ): void {
         $invalid = [];
-        $parameters = reflectionToParameters($reflection->method());
-        foreach ($parameters as $name => $parameter) {
-            if ($parameter instanceof MixedParameterInterface) {
+        foreach ($reflection->method()->getParameters() as $parameter) {
+            $name = $parameter->getName();
+            $type = $parameter->getType();
+            if ($type === null) {
+                $invalid[] = $name;
+
                 continue;
             }
-            if (! ($parameter instanceof StringParameterInterface)) {
-                $invalid[] = $name;
+            if ($type instanceof ReflectionNamedType) {
+                $type = $type->getName();
+                if ($type !== 'string') {
+                    $invalid[] = $name;
+                }
+
+                continue;
             }
+            $invalid[] = $name;
         }
         if ($invalid === []) {
             return;
