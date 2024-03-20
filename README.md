@@ -18,8 +18,6 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=sqale_index)](https://sonarcloud.io/dashboard?id=chevere_action)
 [![CodeFactor](https://www.codefactor.io/repository/github/chevere/action/badge)](https://www.codefactor.io/repository/github/chevere/action)
 
-![Action](.github/banner/action-logo.svg)
-
 ## Summary
 
 Action provides an object oriented convention for working with [Parameter](https://github.com/chevere/parameter).
