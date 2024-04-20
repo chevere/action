@@ -64,7 +64,7 @@ class MyAction extends Action
 }
 ```
 
-### Main logic
+### Main method
 
 Use the `main` method to determine your action's main logic. Use **attributes** from [chevere/parameter](https://github.com/chevere/parameter) on arguments and method return to add validation rules.
 
