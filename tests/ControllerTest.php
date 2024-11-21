@@ -26,7 +26,7 @@ final class ControllerTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ControllerTestInvalidController` InvalidArgumentException → Parameter `mixed, int, var` must be of type **string** for controller `Chevere\Tests\src\ControllerTestInvalidController`
+            `Chevere\Tests\src\ControllerTestInvalidController` LogicException → Parameter \$var of type union is not supported
             PLAIN
         );
         $controller = new ControllerTestInvalidController();
