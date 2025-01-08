@@ -21,16 +21,18 @@ use function Chevere\Parameter\union;
 
 final class ActionTestUnionReturnType extends Action
 {
-    public static function return(): ParameterInterface
-    {
-        return union(
-            string(),
-            int(),
-        );
+    public function __construct(
+        private int|string $value
+    ) {
     }
 
-    protected function main(): string
+    public static function return(): ParameterInterface
     {
-        return '';
+        return union(string(), int());
+    }
+
+    protected function main(): string|int
+    {
+        return $this->value;
     }
 }

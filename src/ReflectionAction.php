@@ -20,8 +20,10 @@ use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\UnionParameterInterface;
 use LogicException;
+use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
+use ReflectionUnionType;
 use TypeError;
 use function Chevere\Message\message;
 use function Chevere\Parameter\reflectionToParameters;
@@ -129,13 +131,26 @@ final class ReflectionAction implements ReflectionActionInterface
             $expect[] = 'array';
             $expect[] = 'Traversable';
         }
-        /** @var ReflectionNamedType $type */
+        /** @var ReflectionNamedType|ReflectionUnionType $type */
         $type = $this->method->getReturnType();
-        $typeName = $type->getName();
+        if ($type instanceof ReflectionUnionType) {
+            $typeName = [];
+            foreach ($type->getTypes() as $unionType) {
+                if ($unionType instanceof ReflectionIntersectionType) {
+                    continue;
+                }
+                $typeName[] = $unionType->getName();
+            }
+        } else {
+            $typeName = $type->getName();
+        }
         $return = match ($typeName) {
             'void' => 'null',
             default => $typeName,
         };
+        if (is_array($return) && $expect === $return) {
+            return;
+        }
         if (! in_array($return, $expect, true)) {
             throw new TypeError(
                 (string) message(

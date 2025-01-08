@@ -96,7 +96,7 @@ final class ActionTest extends TestCase
 
     public function testUnionResponse(): void
     {
-        $action = new ActionTestUnionReturnType();
+        $action = new ActionTestUnionReturnType('test');
         $this->expectNotToPerformAssertions();
         $action->__invoke();
     }
@@ -200,5 +200,12 @@ final class ActionTest extends TestCase
         $this->assertFalse($action->flag());
         $action->__invoke();
         $this->assertTrue($action->flag());
+    }
+
+    public function testReturnsUnion(): void
+    {
+        $this->expectNotToPerformAssertions();
+        $action = new ActionTestUnionReturnType(123);
+        $action->__invoke();
     }
 }

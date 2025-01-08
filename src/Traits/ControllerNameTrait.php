@@ -19,7 +19,6 @@ use function Chevere\Message\message;
 trait ControllerNameTrait
 {
     public function __construct(
-        /** @var class-string */
         private string $name
     ) {
         if ($this->isSubclassOf($this::interface())) {
@@ -37,6 +36,7 @@ trait ControllerNameTrait
 
     public function __toString(): string
     {
+        /** @var class-string */
         return $this->name;
     }
 
