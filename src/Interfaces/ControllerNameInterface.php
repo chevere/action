@@ -20,4 +20,13 @@ use Stringable;
  */
 interface ControllerNameInterface extends Stringable
 {
+    /**
+     * @return class-string ControllerInterface
+     */
+    public function __toString(): string;
+
+    /**
+     * Returns a boolean if the object has this class as one of its parents or implements it.
+     */
+    public function isSubclassOf(string $class): bool;
 }

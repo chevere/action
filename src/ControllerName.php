@@ -15,22 +15,14 @@ namespace Chevere\Action;
 
 use Chevere\Action\Interfaces\ControllerInterface;
 use Chevere\Action\Interfaces\ControllerNameInterface;
-use InvalidArgumentException;
+use Chevere\Action\Traits\ControllerNameTrait;
 
 final class ControllerName implements ControllerNameInterface
 {
-    public function __construct(
-        private string $name
-    ) {
-        if (is_subclass_of($this->name, ControllerInterface::class)) {
-            return;
-        }
+    use ControllerNameTrait;
 
-        throw new InvalidArgumentException();
-    }
-
-    public function __toString(): string
+    private function interface(): string
     {
-        return $this->name;
+        return ControllerInterface::class;
     }
 }

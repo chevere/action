@@ -23,6 +23,11 @@ final class ControllerNameTest extends TestCase
     public function testWrongInterface(): void
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            Controller `Chevere\Tests\ControllerNameTest` doesn't implement `Chevere\Action\Interfaces\ControllerInterface`
+            PLAIN
+        );
         new ControllerName(self::class);
     }
 
