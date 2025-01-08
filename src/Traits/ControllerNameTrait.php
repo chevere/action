@@ -22,7 +22,7 @@ trait ControllerNameTrait
         /** @var class-string */
         private string $name
     ) {
-        if ($this->isSubclassOf($this->interface())) {
+        if ($this->isSubclassOf($this::interface())) {
             return;
         }
 
@@ -45,5 +45,5 @@ trait ControllerNameTrait
         return is_subclass_of($this->name, $class, true);
     }
 
-    abstract private function interface(): string;
+    abstract public static function interface(): string;
 }

@@ -14,12 +14,19 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Action\ControllerName;
+use Chevere\Action\Interfaces\ControllerInterface;
 use Chevere\Tests\src\ControllerNameTestController;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class ControllerNameTest extends TestCase
 {
+    public function testInterface(): void
+    {
+        $interface = ControllerName::interface();
+        $this->assertSame(ControllerInterface::class, $interface);
+    }
+
     public function testWrongInterface(): void
     {
         $this->expectException(InvalidArgumentException::class);

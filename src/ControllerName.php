@@ -21,7 +21,7 @@ final class ControllerName implements ControllerNameInterface
 {
     use ControllerNameTrait;
 
-    private function interface(): string
+    public static function interface(): string
     {
         return ControllerInterface::class;
     }
