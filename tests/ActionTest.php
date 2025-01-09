@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Action\Exceptions\ActionException;
-use Chevere\Tests\src\ActionTestAction;
+use Chevere\Parameter\Interfaces\StringParameterInterface;
 use Chevere\Tests\src\ActionTestArrayAccessReturnType;
 use Chevere\Tests\src\ActionTestAssertRuntimeAction;
 use Chevere\Tests\src\ActionTestAssertStatic;
@@ -32,7 +32,6 @@ use Chevere\Tests\src\ActionTestReturnExtraArguments;
 use Chevere\Tests\src\ActionTestUnionReturnMissingType;
 use Chevere\Tests\src\ActionTestUnionReturnType;
 use PHPUnit\Framework\TestCase;
-use ReflectionProperty;
 
 final class ActionTest extends TestCase
 {
@@ -46,6 +45,13 @@ final class ActionTest extends TestCase
             PLAIN
         );
         $action->__invoke();
+    }
+
+    public function testParameters(): void
+    {
+        $parameters = ActionTestController::parameters();
+        $parameter = $parameters->get('name');
+        $this->assertInstanceOf(StringParameterInterface::class, $parameter);
     }
 
     public function testWithArguments(): void
@@ -155,14 +161,14 @@ final class ActionTest extends TestCase
         $action->__invoke();
     }
 
-    public function testParametersNullAssign(): void
+    public function testAttributeParameters(): void
     {
-        $action = new ActionTestAction();
-        $reflection = new ReflectionProperty($action, 'parameters');
-        $this->assertTrue($reflection->isInitialized($action));
-        $this->assertNull($reflection->getValue($action));
-        $action->__invoke();
-        $reflection->getValue($action);
+        $parameters = ActionTestAttributes::parameters();
+        $parameter = $parameters->required('value')->string();
+        $this->assertSame(
+            '/^ab$/',
+            $parameter->regex()->__toString()
+        );
     }
 
     public function testAttributeValidation(): void

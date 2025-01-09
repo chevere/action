@@ -27,10 +27,6 @@ use function Chevere\Parameter\mixed;
  */
 trait ActionTrait
 {
-    protected ?ParametersInterface $parameters = null;
-
-    protected ?ParameterInterface $return = null;
-
     final public function __invoke(mixed ...$argument): mixed
     {
         try {
@@ -40,7 +36,7 @@ trait ActionTrait
         } catch (Throwable $e) {
             // @infection-ignore-all
             throw new ActionException(
-                ...$this->getExceptionArguments($e),
+                ...$this::getExceptionArguments($e),
             );
         }
         $result = $this->main(...$arguments->toArray());
@@ -50,7 +46,7 @@ trait ActionTrait
         } catch (Throwable $e) {
             // @infection-ignore-all
             throw new ActionException(
-                ...$this->getExceptionArguments($e),
+                ...$this::getExceptionArguments($e),
             );
         }
 
@@ -65,6 +61,20 @@ trait ActionTrait
     public static function mainMethod(): string
     {
         return 'main';
+    }
+
+    final public static function parameters(): ParametersInterface
+    {
+        try {
+            $reflection = static::assert();
+
+            return $reflection->parameters();
+        } catch (Throwable $e) {
+            // @infection-ignore-all
+            throw new ActionException(
+                ...self::getExceptionArguments($e),
+            );
+        }
     }
 
     final public static function assert(): ReflectionActionInterface
@@ -94,7 +104,7 @@ trait ActionTrait
     }
 
     // @phpstan-ignore-next-line
-    private function getExceptionArguments(Throwable $e): array
+    private static function getExceptionArguments(Throwable $e): array
     {
         // @infection-ignore-all
         $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
