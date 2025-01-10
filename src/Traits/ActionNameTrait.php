@@ -21,18 +21,7 @@ trait ActionNameTrait
     public function __construct(
         private string $name
     ) {
-        if ($this->isSubclassOf($this::interface())) {
-            return;
-        }
-
-        throw new InvalidArgumentException(
-            (string) message(
-                "{{ action }} `{{ name }}` doesn't implement `{{ interface }}`",
-                action: $this::symbol(),
-                name: $this->name,
-                interface: $this->interface()
-            )
-        );
+        $this->onConstruct();
     }
 
     public function __toString(): string
@@ -52,4 +41,20 @@ trait ActionNameTrait
     }
 
     abstract public static function interface(): string;
+
+    private function onConstruct(): void
+    {
+        if ($this->isSubclassOf($this::interface())) {
+            return;
+        }
+
+        throw new InvalidArgumentException(
+            (string) message(
+                "{{ action }} `{{ name }}` doesn't implement `{{ interface }}`",
+                action: $this::symbol(),
+                name: $this->name,
+                interface: $this->interface()
+            )
+        );
+    }
 }
