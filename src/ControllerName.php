@@ -15,11 +15,16 @@ namespace Chevere\Action;
 
 use Chevere\Action\Interfaces\ControllerInterface;
 use Chevere\Action\Interfaces\ControllerNameInterface;
-use Chevere\Action\Traits\ControllerNameTrait;
+use Chevere\Action\Traits\ActionNameTrait;
 
 final class ControllerName implements ControllerNameInterface
 {
-    use ControllerNameTrait;
+    use ActionNameTrait;
+
+    public static function symbol(): string
+    {
+        return 'Controller';
+    }
 
     public static function interface(): string
     {

@@ -16,7 +16,7 @@ namespace Chevere\Action\Traits;
 use InvalidArgumentException;
 use function Chevere\Message\message;
 
-trait ControllerNameTrait
+trait ActionNameTrait
 {
     public function __construct(
         private string $name
@@ -27,7 +27,8 @@ trait ControllerNameTrait
 
         throw new InvalidArgumentException(
             (string) message(
-                "Controller `{{ name }}` doesn't implement `{{ interface }}`",
+                "{{ action }} `{{ name }}` doesn't implement `{{ interface }}`",
+                action: $this::symbol(),
                 name: $this->name,
                 interface: $this->interface()
             )
@@ -43,6 +44,11 @@ trait ControllerNameTrait
     public function isSubclassOf(string $class): bool
     {
         return is_subclass_of($this->name, $class, true);
+    }
+
+    public static function symbol(): string
+    {
+        return 'Action';
     }
 
     abstract public static function interface(): string;
