@@ -37,6 +37,9 @@ final class ReflectionAction implements ReflectionActionInterface
 
     private ParameterInterface $return;
 
+    /**
+     * @param class-string<ActionInterface> $action
+     */
     public function __construct(
         private string $action
     ) {

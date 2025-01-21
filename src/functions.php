@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Chevere\Action;
 
+use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
-use ReflectionMethod;
-use function Chevere\Parameter\reflectionToParameters;
 
+/**
+ * @param class-string<ActionInterface> $action
+ */
 function getParameters(string $action): ParametersInterface
 {
-    $reflection = new ReflectionMethod($action, $action::mainMethod());
-
-    return reflectionToParameters($reflection);
+    return (new ReflectionAction($action))->parameters();
 }

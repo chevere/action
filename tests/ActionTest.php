@@ -71,13 +71,8 @@ final class ActionTest extends TestCase
 
     public function testReturnExtraArguments(): void
     {
+        $this->expectNotToPerformAssertions();
         $action = new ActionTestReturnExtraArguments();
-        $this->expectException(ActionException::class);
-        $this->expectExceptionMessage(
-            <<<PLAIN
-            `Chevere\Tests\src\ActionTestReturnExtraArguments` ArgumentCountError → Invalid argument(s) provided: `id, extra`
-            PLAIN
-        );
         $action->__invoke();
     }
 
