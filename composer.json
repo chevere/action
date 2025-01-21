@@ -17,9 +17,10 @@
         "chevere/parameter": "^1.0.3"
     },
     "require-dev": {
+        "chevere/var-dump": "^2.0",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^9.5",
-        "symplify/easy-coding-standard": "^11.1"
+        "symplify/easy-coding-standard": "^12.1"
     },
     "autoload": {
         "files": [
