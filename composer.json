@@ -14,7 +14,7 @@
     "require": {
         "php": "^8.1",
         "chevere/message": "^1.0.0",
-        "chevere/parameter": "^1.0.3"
+        "chevere/parameter": "^1.0.7"
     },
     "require-dev": {
         "chevere/var-dump": "^2.0",
