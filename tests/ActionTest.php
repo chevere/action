@@ -29,6 +29,7 @@ use Chevere\Tests\src\ActionTestNullParameterNoReturn;
 use Chevere\Tests\src\ActionTestNullReturnType;
 use Chevere\Tests\src\ActionTestPrivateScope;
 use Chevere\Tests\src\ActionTestReturnExtraArguments;
+use Chevere\Tests\src\ActionTestSensitiveParameter;
 use Chevere\Tests\src\ActionTestUnionReturnMissingType;
 use Chevere\Tests\src\ActionTestUnionReturnType;
 use PHPUnit\Framework\TestCase;
@@ -208,5 +209,18 @@ final class ActionTest extends TestCase
         $this->expectNotToPerformAssertions();
         $action = new ActionTestUnionReturnType(123);
         $action->__invoke();
+    }
+
+    public function testSensitiveParameter(): void
+    {
+        $action = new ActionTestSensitiveParameter();
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            [sensitive]: Argument value provided doesn't match the regex `/\bsuper|taldo\b/`
+            [secret]: Argument value provided is less than `1`
+            PLAIN
+        );
+        $action('sensitive', -333);
     }
 }
