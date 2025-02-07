@@ -42,15 +42,13 @@ trait ActionTrait
         $result = $this->main(...$arguments->toArray());
 
         try {
-            $reflection->return()->__invoke($result);
+            return $reflection->return()->__invoke($result);
         } catch (Throwable $e) {
             // @infection-ignore-all
             throw new ActionException(
                 ...$this::getExceptionArguments($e),
             );
         }
-
-        return $result;
     }
 
     public static function return(): ParameterInterface
