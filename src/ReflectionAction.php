@@ -16,6 +16,7 @@ namespace Chevere\Action;
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Parameter\Attributes\ReturnAttr;
+use Chevere\Parameter\Interfaces\ArgumentsInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\UnionParameterInterface;
@@ -129,6 +130,7 @@ final class ReflectionAction implements ReflectionActionInterface
         }
         if (in_array('array', $expect, true)) {
             $expect[] = 'ArrayAccess';
+            $expect[] = ArgumentsInterface::class;
         }
         if (in_array('iterable', $expect, true)) {
             $expect[] = 'array';
