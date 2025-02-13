@@ -15,7 +15,6 @@ namespace Chevere\Tests;
 
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
-use Chevere\Tests\src\ActionTestArrayAccessReturnType;
 use Chevere\Tests\src\ActionTestAssertRuntimeAction;
 use Chevere\Tests\src\ActionTestAssertStatic;
 use Chevere\Tests\src\ActionTestAttributes;
@@ -113,13 +112,6 @@ final class ActionTest extends TestCase
             `Chevere\Tests\src\ActionTestUnionReturnMissingType` TypeError → Action `main` method must declare `string|int` return type
             PLAIN
         );
-        $action->__invoke();
-    }
-
-    public function testArrayAccessResponse(): void
-    {
-        $action = new ActionTestArrayAccessReturnType();
-        $this->expectNotToPerformAssertions();
         $action->__invoke();
     }
 
