@@ -30,6 +30,11 @@ trait ActionNameTrait
         return $this->name;
     }
 
+    public function arguments(): array
+    {
+        return [];
+    }
+
     public function isSubclassOf(string $class): bool
     {
         return is_subclass_of($this->name, $class, true);

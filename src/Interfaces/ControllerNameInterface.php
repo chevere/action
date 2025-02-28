@@ -13,20 +13,13 @@ declare(strict_types=1);
 
 namespace Chevere\Action\Interfaces;
 
-use Stringable;
-
 /**
  * Describes the component in charge of handling the controller name.
  */
-interface ControllerNameInterface extends Stringable
+interface ControllerNameInterface extends ActionNameInterface
 {
     /**
      * @return class-string ControllerInterface
      */
     public function __toString(): string;
-
-    /**
-     * Returns a boolean if the object has this class as one of its parents or implements it.
-     */
-    public function isSubclassOf(string $class): bool;
 }

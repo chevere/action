@@ -20,4 +20,18 @@ use Stringable;
  */
 interface ActionNameInterface extends Stringable
 {
+    /**
+     * @return class-string Action class name
+     */
+    public function __toString(): string;
+
+    /**
+     * @return array<string,mixed> Arguments to be passed to the named class `setUp` method.
+     */
+    public function arguments(): array;
+
+    /**
+     * Returns a boolean if the object has this class as one of its parents or implements it.
+     */
+    public function isSubclassOf(string $class): bool;
 }
