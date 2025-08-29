@@ -14,7 +14,11 @@ declare(strict_types=1);
 namespace Chevere\Action;
 
 use Chevere\Action\Interfaces\ActionInterface;
+use Chevere\Parameter\Attributes\ReturnAttr;
+use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
+use ReflectionMethod;
+use function Chevere\Parameter\reflectionToReturn;
 
 /**
  * @param class-string<ActionInterface> $action
@@ -22,4 +26,19 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
 function getParameters(string $action): ParametersInterface
 {
     return (new ReflectionAction($action))->parameters();
+}
+
+/**
+ * @param class-string<ActionInterface> $action
+ */
+function getReturnParameter(string $action): ParameterInterface
+{
+    $return = $action::return();
+    $reflection = new ReflectionMethod($action, 'main');
+    $attributes = $reflection->getAttributes(ReturnAttr::class);
+    if ($attributes !== []) {
+        return reflectionToReturn($reflection);
+    }
+
+    return $return;
 }
