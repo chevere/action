@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 
 final class ActionTestEmpty extends Action
 {
-    protected function main(): array
+    public function __invoke(): array
     {
         return [];
     }

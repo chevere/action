@@ -2,11 +2,11 @@
 
 ![Chevere](chevere.svg)
 
-[![Build](https://img.shields.io/github/actions/workflow/status/chevere/action/test.yml?branch=1.0&style=flat-square)](https://github.com/chevere/action/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/chevere/action/test.yml?branch=2.0&style=flat-square)](https://github.com/chevere/action/actions)
 ![Code size](https://img.shields.io/github/languages/code-size/chevere/action?style=flat-square)
 [![Apache-2.0](https://img.shields.io/github/license/chevere/action?style=flat-square)](LICENSE)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%209-blueviolet?style=flat-square)](https://phpstan.org/)
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fchevere%2Faction%2F1.0)](https://dashboard.stryker-mutator.io/reports/github.com/chevere/action/1.0)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fchevere%2Faction%2F2.0)](https://dashboard.stryker-mutator.io/reports/github.com/chevere/action/2.0)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=alert_status)](https://sonarcloud.io/dashboard?id=chevere_action)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=chevere_action)
@@ -18,7 +18,7 @@
 
 ## Summary
 
-Action provides an object oriented convention for working with [Parameter](https://github.com/chevere/parameter).
+Action implements the Action pattern relying on the  [Parameter](https://github.com/chevere/parameter) library for creating a structured way to define and validate logic.
 
 ## Installing
 
@@ -62,16 +62,16 @@ class MyAction extends Action
 }
 ```
 
-### Main method
+### Invoke method
 
-Use the `main` method to determine your action's main logic. Use **attributes** from [chevere/parameter](https://github.com/chevere/parameter) on arguments and method return to add validation rules.
+Use the `__invoke()` method to determine action main logic. Use **attributes** from [chevere/parameter](https://github.com/chevere/parameter) on arguments and method return to add validation rules.
 
 * Before validation rules:
 
 ```php
 class MyAction
 {
-    protected function main(
+    public function __invoke(
         string $value
     ): int
     {
@@ -88,25 +88,31 @@ use Chevere\Parameter\Attributes\IntAttr;
 use Chevere\Parameter\Attributes\ReturnAttr;
 use Chevere\Parameter\Attributes\StringAttr;
 
+use function Chevere\Parameter\valid;
+use function Chevere\Parameter\returnAttr;
+
 class MyAction extends Action
 {
     #[ReturnAttr(
         new IntAttr(min: 0, max: 100)
     )]
-    protected function main(
+    public function __invoke(
         #[StringAttr('/^ok/')]
         string $value
     ): int {
-        return mb_strlen($value) * 5;
+        $this->assertArguments($value);
+        return $this->assertReturn(
+            mb_strlen($value) * 5
+        );
     }
 }
 ```
 
 ## Using actions
 
-Invoke action's main logic passing the arguments you would pass to `main`. Action internal runtime will validate arguments and return against all defined rules.
+Invoke action's main logic passing the arguments you would pass to `__invoke`. Action internal runtime will validate arguments and return against all defined rules.
 
-💡 You can toy with this by running `php demo/demo.php`
+💡 You can try by running `php demo/demo.php`
 
 ```php
 $action = new MyAction();
@@ -144,32 +150,15 @@ function myCallable(): StringParameterInterface
 #[ReturnAttr(
     new CallableAttr('myCallable')
 )]
-protected function main(): string
+public function __invoke(): string
 {
-    return 'chevere';
-}
-```
-
-### Custom main method
-
-Override Action's `mainMethod` to define a custom `main` method to use.
-
-```php
-public static function mainMethod(): string
-{
-    return 'altMain';
+    return $this->assertReturn('chevere');
 }
 ```
 
 ## Controller
 
-The Controller component is a special type of Action in charge of handling incoming instructions. Its `main` method only takes parameters of type `string`.
-
-Controller is intended to use them wired to:
-
-* Web Servers
-* CLI applications
-* Application runners
+The Controller component is a special type of Action in charge of handling incoming instructions. Its `__invoke` method only takes parameters of type `string`.
 
 ### Defining a Controller
 
@@ -184,12 +173,12 @@ class SomeController extends Controller
 }
 ```
 
-### Main Parameters
+### Invoke parameters
 
-Parameters are defined in the `main` method but it just takes strings.
+Parameters are defined in the `__invoke` method but it just takes strings.
 
 ```php
-public function main(
+public function __invoke(
     string $pepito,
     string $paysTwice
 ): array
@@ -205,7 +194,7 @@ Use `StringAttr` to validate a string:
 ```php
 use Chevere\Attributes\StringAttr;
 
-public function main(
+public function __invoke(
     #[StringAttr('/^[a-z]$/')]
     string $pepito,
     #[StringAttr('/^[a-zA-Z]+$/')]

@@ -19,13 +19,13 @@ use function Chevere\Parameter\string;
 
 final class ActionTestController extends Controller
 {
+    public function __invoke(string $name): string
+    {
+        return $name;
+    }
+
     public static function return(): ParameterInterface
     {
         return string();
-    }
-
-    protected function main(string $name): string
-    {
-        return $name;
     }
 }

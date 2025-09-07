@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 
 final class ActionTestVariadic extends Action
 {
-    public function main(
+    public function __invoke(
         int $id,
         string ...$name
     ): array {

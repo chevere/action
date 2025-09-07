@@ -20,19 +20,19 @@ use function Chevere\Parameter\string;
 
 final class ActionTestReturnExtraArguments extends Action
 {
-    public static function return(): ParameterInterface
-    {
-        return arrayp(
-            name: string()
-        );
-    }
-
-    protected function main(): array
+    public function __invoke(): array
     {
         return [
             'id' => 1,
             'name' => 'name',
             'extra' => 'extra',
         ];
+    }
+
+    public static function return(): ParameterInterface
+    {
+        return arrayp(
+            name: string()
+        );
     }
 }

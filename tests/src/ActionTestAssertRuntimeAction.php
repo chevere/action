@@ -20,14 +20,16 @@ final class ActionTestAssertRuntimeAction extends Action
 {
     private bool $flag = false;
 
+    public function __invoke(): array
+    {
+        $this->assertArguments();
+
+        return [];
+    }
+
     public function flag(): bool
     {
         return $this->flag;
-    }
-
-    protected function main(): array
-    {
-        return [];
     }
 
     protected function assertRuntime(ReflectionActionInterface $reflection): void

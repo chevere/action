@@ -17,8 +17,10 @@ use Chevere\Action\Controller;
 
 final class ControllerTestInvalidController extends Controller
 {
-    protected function main($mixed, int $int, int|string $var): array
+    public function __invoke($mixed, int $int, int|string $var): array
     {
+        $this->assertArguments(...get_defined_vars());
+
         return [];
     }
 }

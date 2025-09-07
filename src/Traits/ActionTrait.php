@@ -22,29 +22,38 @@ use Throwable;
 use function Chevere\Message\message;
 use function Chevere\Parameter\mixed;
 
-/**
- * @method mixed main()
- */
 trait ActionTrait
 {
-    final public function __invoke(mixed ...$argument): mixed
+    private ReflectionActionInterface $_reflection;
+
+    public function assertArguments(mixed ...$argument): array
     {
         try {
-            $reflection = static::assert();
-            $this->assertRuntime($reflection);
-            $arguments = $reflection->parameters()->__invoke(...$argument);
+            $this->_reflection ??= static::assert();
+            $this->assertRuntime($this->_reflection);
+
+            return $this->_reflection->parameters()
+                ->__invoke(...$argument)
+                ->toArray();
         } catch (Throwable $e) {
-            // @infection-ignore-all
             throw new ActionException(
                 ...$this::getExceptionArguments($e),
             );
         }
-        $result = $this->main(...$arguments->toArray());
+    }
 
+    /**
+     * @return mixed Same as $value
+     * @throws ActionException
+     */
+    public function assertReturn(mixed $value = null): mixed
+    {
         try {
-            return $reflection->return()->__invoke($result);
+            $this->_reflection ??= static::assert();
+            $this->assertRuntime($this->_reflection);
+
+            return $this->_reflection->return()->__invoke($value);
         } catch (Throwable $e) {
-            // @infection-ignore-all
             throw new ActionException(
                 ...$this::getExceptionArguments($e),
             );
@@ -56,11 +65,6 @@ trait ActionTrait
         return mixed();
     }
 
-    public static function mainMethod(): string
-    {
-        return 'main';
-    }
-
     final public static function parameters(): ParametersInterface
     {
         try {
@@ -68,8 +72,8 @@ trait ActionTrait
 
             return $reflection->parameters();
         } catch (Throwable $e) {
-            // @infection-ignore-all
             throw new ActionException(
+                // @phpstan-ignore-next-line
                 ...self::getExceptionArguments($e),
             );
         }
@@ -101,10 +105,8 @@ trait ActionTrait
         // enables extra runtime assertion
     }
 
-    // @phpstan-ignore-next-line
     private static function getExceptionArguments(Throwable $e): array
     {
-        // @infection-ignore-all
         $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
         $message = (string) message(
             '`%actor%` %exception% → %message%',
@@ -113,7 +115,6 @@ trait ActionTrait
             message: $e->getMessage(),
         );
 
-        // @infection-ignore-all
         return [
             $message,
             $e,

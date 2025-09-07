@@ -19,12 +19,12 @@ use function Chevere\Parameter\null;
 
 final class ActionTestNullReturnType extends Action
 {
+    public function __invoke(): void
+    {
+    }
+
     public static function return(): ParameterInterface
     {
         return null();
-    }
-
-    protected function main(): void
-    {
     }
 }

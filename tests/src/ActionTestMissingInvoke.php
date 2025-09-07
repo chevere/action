@@ -15,10 +15,6 @@ namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
 
-final class ActionTestPrivateScope extends Action
+final class ActionTestMissingInvoke extends Action
 {
-    private function main(): array
-    {
-        return [];
-    }
 }

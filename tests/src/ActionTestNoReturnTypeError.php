@@ -19,12 +19,13 @@ use function Chevere\Parameter\arrayp;
 
 final class ActionTestNoReturnTypeError extends Action
 {
+    public function __invoke()
+    {
+        return $this->assertReturn();
+    }
+
     public static function return(): ParameterInterface
     {
         return arrayp();
-    }
-
-    protected function main()
-    {
     }
 }

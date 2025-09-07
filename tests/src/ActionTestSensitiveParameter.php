@@ -20,7 +20,7 @@ use SensitiveParameter;
 
 final class ActionTestSensitiveParameter extends Action
 {
-    protected function main(
+    public function __invoke(
         #[SensitiveParameter()]
         #[EnumAttr('super', 'taldo')]
         string $sensitive,
@@ -28,5 +28,6 @@ final class ActionTestSensitiveParameter extends Action
         #[IntAttr(min: 1)]
         int $secret
     ): void {
+        $this->assertArguments(...get_defined_vars());
     }
 }

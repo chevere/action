@@ -20,13 +20,11 @@ use Chevere\Tests\src\ActionTestAssertStatic;
 use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
 use Chevere\Tests\src\ActionTestIterableResponse;
-use Chevere\Tests\src\ActionTestIterableResponseError;
+use Chevere\Tests\src\ActionTestIterableReturnError;
 use Chevere\Tests\src\ActionTestMethodParameterMissingType;
-use Chevere\Tests\src\ActionTestMissingRun;
 use Chevere\Tests\src\ActionTestNoReturnTypeError;
 use Chevere\Tests\src\ActionTestNullParameterNoReturn;
 use Chevere\Tests\src\ActionTestNullReturnType;
-use Chevere\Tests\src\ActionTestPrivateScope;
 use Chevere\Tests\src\ActionTestReturnExtraArguments;
 use Chevere\Tests\src\ActionTestSensitiveParameter;
 use Chevere\Tests\src\ActionTestUnionReturnMissingType;
@@ -35,18 +33,6 @@ use PHPUnit\Framework\TestCase;
 
 final class ActionTest extends TestCase
 {
-    public function testMissingMainMethod(): void
-    {
-        $action = new ActionTestMissingRun();
-        $this->expectException(ActionException::class);
-        $this->expectExceptionMessage(
-            <<<PLAIN
-            `Chevere\Tests\src\ActionTestMissingRun` LogicException → Action doesn't define a `main` method
-            PLAIN
-        );
-        $action->__invoke();
-    }
-
     public function testParameters(): void
     {
         $parameters = ActionTestController::parameters();
@@ -85,11 +71,11 @@ final class ActionTest extends TestCase
 
     public function testIterableResponseError(): void
     {
-        $action = new ActionTestIterableResponseError();
+        $action = new ActionTestIterableReturnError();
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestIterableResponseError` InvalidArgumentException → [V *iterable]: Argument must be of type int, string given
+            `Chevere\Tests\src\ActionTestIterableReturnError` InvalidArgumentException → [V *iterable]: Argument must be of type int, string given
             PLAIN
         );
         $action->__invoke();
@@ -109,16 +95,9 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestUnionReturnMissingType` TypeError → Action `main` method must declare `string|int` return type
+            `Chevere\Tests\src\ActionTestUnionReturnMissingType` TypeError → Action `__invoke` method must declare `string|int` return type
             PLAIN
         );
-        $action->__invoke();
-    }
-
-    public function testPrivateScope(): void
-    {
-        $action = new ActionTestPrivateScope();
-        $this->expectException(ActionException::class);
         $action->__invoke();
     }
 
@@ -136,7 +115,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestNoReturnTypeError` TypeError → Action `main` method must declare `array` return type
+            `Chevere\Tests\src\ActionTestNoReturnTypeError` TypeError → Action `__invoke` method must declare `array` return type
             PLAIN
         );
         $action->__invoke();
@@ -209,10 +188,10 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            [sensitive]: Argument value provided doesn't match the regex `/\bsuper|taldo\b/`
+            [sensitive]: Argument value provided doesn't match the regex `#^super|taldo$#`
             [secret]: Argument value provided is less than `1`
             PLAIN
         );
-        $action('sensitive', -333);
+        $action->__invoke('sensitive', -333);
     }
 }

@@ -30,7 +30,7 @@ final class ControllerTest extends TestCase
             PLAIN
         );
         $controller = new ControllerTestInvalidController();
-        $controller->__invoke();
+        $controller->__invoke(1, 1, 1);
     }
 
     public function testConstruct(): void

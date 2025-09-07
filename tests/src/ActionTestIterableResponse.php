@@ -21,15 +21,7 @@ use function Chevere\Parameter\string;
 
 final class ActionTestIterableResponse extends Action
 {
-    public static function return(): ParameterInterface
-    {
-        return iterable(
-            V: int(),
-            K: string()
-        );
-    }
-
-    protected function main(): iterable
+    public function __invoke(): iterable
     {
         return [
             'id' => 123,
@@ -37,5 +29,13 @@ final class ActionTestIterableResponse extends Action
             'id' => 125,
             // ...
         ];
+    }
+
+    public static function return(): ParameterInterface
+    {
+        return iterable(
+            V: int(),
+            K: string()
+        );
     }
 }

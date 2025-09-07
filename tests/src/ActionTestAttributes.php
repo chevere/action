@@ -22,16 +22,18 @@ use function Chevere\Parameter\string;
 
 final class ActionTestAttributes extends Action
 {
-    public static function return(): ParameterInterface
-    {
-        return string();
-    }
-
     #[ReturnAttr(new IntAttr(min: 1))]
-    protected function main(
+    public function __invoke(
         #[StringAttr('/^ab$/')]
         string $value
     ): int {
-        return 1;
+        $this->assertArguments($value);
+
+        return $this->assertReturn(1);
+    }
+
+    public static function return(): ParameterInterface
+    {
+        return string();
     }
 }

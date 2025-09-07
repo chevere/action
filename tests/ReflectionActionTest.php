@@ -15,8 +15,7 @@ namespace Chevere\Tests;
 
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\ReflectionAction;
-use Chevere\Tests\src\ActionTestMissingRun;
-use Chevere\Tests\src\ActionTestPrivateScope;
+use Chevere\Tests\src\ActionTestMissingInvoke;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 
@@ -43,24 +42,12 @@ final class ReflectionActionTest extends TestCase
         new ReflectionAction($action);
     }
 
-    public function testActionNoMainMethod(): void
+    public function testActionNoInvokeMethod(): void
     {
-        $action = ActionTestMissingRun::class;
-        $main = ActionTestMissingRun::mainMethod();
+        $action = ActionTestMissingInvoke::class;
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
-            "Action doesn't define a `{$main}` method"
-        );
-        new ReflectionAction($action);
-    }
-
-    public function testActionPrivateScope(): void
-    {
-        $action = ActionTestPrivateScope::class;
-        $main = ActionTestPrivateScope::mainMethod();
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage(
-            "Action `{$main}` method can't be private"
+            "Action doesn't define a `__invoke` method"
         );
         new ReflectionAction($action);
     }

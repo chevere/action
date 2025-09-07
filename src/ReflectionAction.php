@@ -41,7 +41,7 @@ final class ReflectionAction implements ReflectionActionInterface
      * @param class-string<ActionInterface> $action
      */
     public function __construct(
-        private string $action
+        string $action
     ) {
         if (! class_exists($action)) {
             throw new LogicException(
@@ -60,23 +60,14 @@ final class ReflectionAction implements ReflectionActionInterface
         /**
          * @var class-string<ActionInterface> $action
          */
-        if (! method_exists($action, $action::mainMethod())) {
+        if (! method_exists($action, '__invoke')) {
             throw new LogicException(
                 (string) message(
-                    "Action doesn't define a `%main%` method",
-                    main: $action::mainMethod(),
+                    "Action doesn't define a `__invoke` method",
                 )
             );
         }
-        $this->method = new ReflectionMethod($action, $action::mainMethod());
-        if ($this->method->isPrivate()) {
-            throw new LogicException(
-                (string) message(
-                    "Action `%main%` method can't be private",
-                    main: $action::mainMethod(),
-                )
-            );
-        }
+        $this->method = new ReflectionMethod($action, '__invoke');
         $this->parameters = reflectionToParameters($this->method);
         $attributes = $this->method->getAttributes(ReturnAttr::class);
         $this->return = match (true) {
@@ -90,8 +81,7 @@ final class ReflectionAction implements ReflectionActionInterface
 
             throw new TypeError(
                 (string) message(
-                    'Action `%method%` method must declare `%type%` return type',
-                    method: $action::mainMethod(),
+                    'Action `__invoke` method must declare `%type%` return type',
                     type: $this->return->type()->typeHinting(),
                 )
             );
@@ -154,8 +144,7 @@ final class ReflectionAction implements ReflectionActionInterface
         if (! in_array($return, $expect, true)) {
             throw new TypeError(
                 (string) message(
-                    'Action `%main%` method must declare `%type%` return type',
-                    main: $this->action::mainMethod(),
+                    'Action `__invoke` method must declare `%type%` return type',
                     type: implode('|', $expect),
                 )
             );

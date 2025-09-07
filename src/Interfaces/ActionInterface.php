@@ -18,32 +18,32 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
 
 /**
  * Describes the component in charge of defining a single logic action.
- * @method mixed main() Defines the action main logic.
+ *
+ * Use mixed __invoke() to define the action main logic.
  */
 interface ActionInterface
 {
-    /**
-     * Run `main` for `...$argument` validating all I/O rules.
-     */
-    public function __invoke(mixed ...$argument): mixed;
-
     /**
      * Provides access to the parameters defined at the main method.
      */
     public static function parameters(): ParametersInterface;
 
     /**
-     * Defines expected return parameter validation for main method.
+     * Defines expected return parameter validation for __invoke method.
      */
     public static function return(): ParameterInterface;
 
     /**
-     * Defines main method to use.
-     */
-    public static function mainMethod(): string;
-
-    /**
-     * Asserts action rules coherence.
+     * Asserts action static rules coherence.
      */
     public static function assert(): ReflectionActionInterface;
+
+    /**
+     * Asserts action arguments coherence.
+     *
+     * @return array<int|string, mixed>
+     */
+    public function assertArguments(mixed ...$argument): array;
+
+    public function assertReturn(mixed $return): mixed;
 }

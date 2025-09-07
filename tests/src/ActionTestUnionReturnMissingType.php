@@ -21,16 +21,16 @@ use function Chevere\Parameter\union;
 
 final class ActionTestUnionReturnMissingType extends Action
 {
+    public function __invoke(): float
+    {
+        return $this->assertReturn(3.1);
+    }
+
     public static function return(): ParameterInterface
     {
         return union(
             string(),
             int(),
         );
-    }
-
-    protected function main(): float
-    {
-        return 3.1;
     }
 }

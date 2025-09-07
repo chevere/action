@@ -25,8 +25,9 @@ final class ActionTestAssertStatic extends Action
         self::$isAsserted = false;
     }
 
-    public function main(): void
+    public function __invoke(): void
     {
+        $this->assertArguments();
     }
 
     public static function isAsserted(): bool

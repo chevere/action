@@ -1,0 +1,7 @@
+parameters:
+    level: 9
+    paths:
+        - src
+    ignoreErrors:
+        -
+            message: '#Method .+::getExceptionArguments\(\) return type has no value type specified in iterable type array.#'

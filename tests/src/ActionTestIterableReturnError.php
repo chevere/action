@@ -19,23 +19,25 @@ use function Chevere\Parameter\int;
 use function Chevere\Parameter\iterable;
 use function Chevere\Parameter\string;
 
-final class ActionTestIterableResponseError extends Action
+final class ActionTestIterableReturnError extends Action
 {
+    public function __invoke(): array
+    {
+        return $this->assertReturn(
+            [
+                'a' => 123,
+                'b' => '124',
+                'c' => 125,
+                // ...
+            ]
+        );
+    }
+
     public static function return(): ParameterInterface
     {
         return iterable(
             V: int(),
             K: string()
         );
-    }
-
-    protected function main(): array
-    {
-        return [
-            'a' => 123,
-            'b' => '124',
-            'c' => 125,
-            // ...
-        ];
     }
 }

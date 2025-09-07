@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 
 final class ActionTestBoolReturn extends Action
 {
-    protected function main(): bool
+    public function __invoke(): bool
     {
         return true;
     }

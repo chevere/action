@@ -24,7 +24,7 @@ class MyAction implements ActionInterface
     #[ReturnAttr(
         new IntAttr(min: 0, max: 100)
     )]
-    protected function main(
+    public function __invoke(
         #[StringAttr('/^ok/')]
         string $value
     ): int {

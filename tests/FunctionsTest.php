@@ -24,7 +24,7 @@ final class FunctionsTest extends TestCase
     public function testGetParameters(): void
     {
         $action = ActionTestAction::class;
-        $reflection = new ReflectionMethod($action, $action::mainMethod());
+        $reflection = new ReflectionMethod($action, '__invoke');
         $toParameters = reflectionToParameters($reflection);
         $parameters = getParameters($action);
         $this->assertEquals(
