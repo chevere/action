@@ -16,18 +16,15 @@ namespace Chevere\Tests\src;
 use Chevere\Action\Action;
 use Chevere\Parameter\Attributes\EnumAttr;
 use Chevere\Parameter\Attributes\IntAttr;
-use SensitiveParameter;
 
-final class ActionTestSensitiveParameter extends Action
+final class ActionTestAssertArgumentsExplicit extends Action
 {
     public function __invoke(
-        #[SensitiveParameter()]
         #[EnumAttr('super', 'taldo')]
-        string $sensitive,
-        #[SensitiveParameter()]
+        string $foo,
         #[IntAttr(min: 1)]
-        int $secret
+        int $bar
     ): void {
-        $this->assertArguments();
+        $this->assertArguments($foo, $bar);
     }
 }

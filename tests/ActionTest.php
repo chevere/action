@@ -14,7 +14,10 @@ declare(strict_types=1);
 namespace Chevere\Tests;
 
 use Chevere\Action\Exceptions\ActionException;
+use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
+use Chevere\Tests\src\ActionTestAssertArgumentsExplicit;
+use Chevere\Tests\src\ActionTestAssertArgumentsImplicit;
 use Chevere\Tests\src\ActionTestAssertRuntimeAction;
 use Chevere\Tests\src\ActionTestAssertStatic;
 use Chevere\Tests\src\ActionTestAttributes;
@@ -29,10 +32,30 @@ use Chevere\Tests\src\ActionTestReturnExtraArguments;
 use Chevere\Tests\src\ActionTestSensitiveParameter;
 use Chevere\Tests\src\ActionTestUnionReturnMissingType;
 use Chevere\Tests\src\ActionTestUnionReturnType;
+use Closure;
 use PHPUnit\Framework\TestCase;
 
 final class ActionTest extends TestCase
 {
+    public static function getClosuresAssertProvider(ActionInterface $action): array
+    {
+        return [
+            [
+                function () use ($action) {
+                    $action->__invoke('error', -111);
+                },
+            ],
+            [
+                function () use ($action) {
+                    $closure = function (string $foo, int $bar) use ($action) {
+                        $action->assertArguments($foo, $bar);
+                    };
+                    $closure('error', -111);
+                },
+            ],
+        ];
+    }
+
     public function testParameters(): void
     {
         $parameters = ActionTestController::parameters();
@@ -155,7 +178,7 @@ final class ActionTest extends TestCase
     {
         $action = new ActionTestAssertStatic();
         $this->assertFalse($action::isAsserted());
-        $action::assert();
+        $action::reflection();
         $this->assertTrue($action::isAsserted());
     }
 
@@ -193,5 +216,49 @@ final class ActionTest extends TestCase
             PLAIN
         );
         $action->__invoke('sensitive', -333);
+    }
+
+    /**
+     * @dataProvider assertArgumentsExplicitProvider
+     */
+    public function testAssertArgumentsExplicit(Closure $closure): void
+    {
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            [foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
+            [bar]: Argument value provided `-111` is less than `1`
+            PLAIN
+        );
+        $closure();
+    }
+
+    public static function assertArgumentsExplicitProvider(): array
+    {
+        return static::getClosuresAssertProvider(
+            new ActionTestAssertArgumentsExplicit()
+        );
+    }
+
+    /**
+     * @dataProvider assertArgumentsImplicitProvider
+     */
+    public function testAssertArgumentsImplicit(Closure $closure): void
+    {
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            [foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
+            [bar]: Argument value provided `-111` is less than `1`
+            PLAIN
+        );
+        $closure();
+    }
+
+    public static function assertArgumentsImplicitProvider(): array
+    {
+        return static::getClosuresAssertProvider(
+            new ActionTestAssertArgumentsImplicit()
+        );
     }
 }

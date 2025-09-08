@@ -18,6 +18,8 @@ use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Action\ReflectionAction;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
+use InvalidArgumentException;
+use ReflectionException;
 use Throwable;
 use function Chevere\Message\message;
 use function Chevere\Parameter\mixed;
@@ -28,8 +30,12 @@ trait ActionTrait
 
     public function assertArguments(mixed ...$argument): array
     {
+        if ($argument === []) {
+            $argument = $this->takeArguments(1);
+        }
+
         try {
-            $this->_reflection ??= static::assert();
+            $this->_reflection ??= static::reflection();
             $this->assertRuntime($this->_reflection);
 
             return $this->_reflection->parameters()
@@ -49,7 +55,7 @@ trait ActionTrait
     public function assertReturn(mixed $value = null): mixed
     {
         try {
-            $this->_reflection ??= static::assert();
+            $this->_reflection ??= static::reflection();
             $this->assertRuntime($this->_reflection);
 
             return $this->_reflection->return()->__invoke($value);
@@ -68,7 +74,7 @@ trait ActionTrait
     final public static function parameters(): ParametersInterface
     {
         try {
-            $reflection = static::assert();
+            $reflection = static::reflection();
 
             return $reflection->parameters();
         } catch (Throwable $e) {
@@ -79,7 +85,7 @@ trait ActionTrait
         }
     }
 
-    final public static function assert(): ReflectionActionInterface
+    final public static function reflection(): ReflectionActionInterface
     {
         $reflection = new ReflectionAction(static::class);
         static::assertStatic($reflection);
@@ -89,6 +95,7 @@ trait ActionTrait
 
     /**
      * Enables to define extra parameter assertion before the run method is called.
+     *
      * @codeCoverageIgnore
      */
     protected static function assertStatic(ReflectionActionInterface $reflection): void
@@ -98,11 +105,42 @@ trait ActionTrait
 
     /**
      * Enables to define extra parameter assertion before the run method is called.
+     *
      * @codeCoverageIgnore
      */
     protected function assertRuntime(ReflectionActionInterface $reflection): void
     {
         // enables extra runtime assertion
+    }
+
+    /**
+     * Return an array with the passed function arguments from the backtrace position.
+     * This is negligible (~0-2.5%) slower than using direct argument access.
+     *
+     * @return array<string, mixed>
+     *
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    private function takeArguments(int $pos): array
+    {
+        $tracePos = 2 + $pos;
+        $trace = debug_backtrace(0, $tracePos);
+        $caller = $trace[$tracePos - 1];
+        $args = $caller['args'] ?? [];
+        $this->_reflection ??= static::reflection();
+        $parameters = $this->_reflection->parameters();
+        $pos = -1;
+        $arguments = [];
+        foreach ($parameters->keys() as $named) {
+            $pos++;
+            if (! isset($args[$pos])) {
+                continue;
+            }
+            $arguments[$named] = $args[$pos];
+        }
+
+        return $arguments;
     }
 
     private static function getExceptionArguments(Throwable $e): array
