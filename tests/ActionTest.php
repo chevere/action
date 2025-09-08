@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
+use Chevere\Tests\src\ActionTestAssertArgumentsDefinedVars;
 use Chevere\Tests\src\ActionTestAssertArgumentsExplicit;
 use Chevere\Tests\src\ActionTestAssertArgumentsImplicit;
 use Chevere\Tests\src\ActionTestAssertRuntimeAction;
@@ -259,6 +260,28 @@ final class ActionTest extends TestCase
     {
         return static::getClosuresAssertProvider(
             new ActionTestAssertArgumentsImplicit()
+        );
+    }
+
+    /**
+     * @dataProvider assertArgumentsDefinedVarsProvider
+     */
+    public function testAssertArgumentsDefinedVars(Closure $closure): void
+    {
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            [foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
+            [bar]: Argument value provided `-111` is less than `1`
+            PLAIN
+        );
+        $closure();
+    }
+
+    public static function assertArgumentsDefinedVarsProvider(): array
+    {
+        return static::getClosuresAssertProvider(
+            new ActionTestAssertArgumentsDefinedVars()
         );
     }
 
