@@ -262,20 +262,10 @@ final class ActionTest extends TestCase
         );
     }
 
-    public function testReflection(): void
+    public function testReflectionCache(): void
     {
-        $action = new ActionTestSensitiveParameter();
-        $this->assertSame(
-            $action->reflection(),
-            $action->reflection()
-        );
-        $this->assertEquals(
-            $action::newReflection(),
-            $action->reflection()
-        );
-        $this->assertNotSame(
-            $action::newReflection(),
-            $action->reflection()
-        );
+        $reflection1 = ActionTestAssertStatic::reflection();
+        $reflection2 = ActionTestAssertStatic::reflection();
+        $this->assertSame($reflection1, $reflection2);
     }
 }

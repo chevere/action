@@ -26,8 +26,6 @@ use function Chevere\Parameter\mixed;
 
 trait ActionTrait
 {
-    private ReflectionActionInterface $_reflection;
-
     public function assertArguments(mixed ...$argument): array
     {
         if ($argument === []) {
@@ -35,9 +33,10 @@ trait ActionTrait
         }
 
         try {
-            $this->assertRuntime($this->reflection());
+            $reflection = static::reflection();
+            $this->assertRuntime($reflection);
 
-            return $this->reflection()->parameters()
+            return $reflection->parameters()
                 ->__invoke(...$argument)
                 ->toArray();
         } catch (Throwable $e) {
@@ -54,9 +53,10 @@ trait ActionTrait
     public function assertReturn(mixed $value = null): mixed
     {
         try {
-            $this->assertRuntime($this->reflection());
+            $reflection = static::reflection();
+            $this->assertRuntime($reflection);
 
-            return $this->reflection()->return()->__invoke($value);
+            return $reflection->return()->__invoke($value);
         } catch (Throwable $e) {
             throw new ActionException(
                 ...$this::getExceptionArguments($e),
@@ -72,7 +72,7 @@ trait ActionTrait
     final public static function parameters(): ParametersInterface
     {
         try {
-            $reflection = static::newReflection();
+            $reflection = static::reflection();
 
             return $reflection->parameters();
         } catch (Throwable $e) {
@@ -86,7 +86,7 @@ trait ActionTrait
     final public function assert(): void
     {
         try {
-            $this->assertRuntime($this->reflection());
+            $this->assertRuntime(static::reflection());
         } catch (Throwable $e) {
             throw new ActionException(
                 // @phpstan-ignore-next-line
@@ -95,15 +95,13 @@ trait ActionTrait
         }
     }
 
-    final public function reflection(): ReflectionActionInterface
+    final public static function reflection(): ReflectionActionInterface
     {
-        return $this->_reflection ??= static::newReflection();
-    }
+        static $cache = [];
 
-    final public static function newReflection(): ReflectionActionInterface
-    {
-        $reflection = new ReflectionAction(static::class);
+        $reflection = $cache[static::class] ??= new ReflectionAction(static::class);
         static::assertStatic($reflection);
+        $cache[static::class] = $reflection;
 
         return $reflection;
     }
@@ -143,7 +141,7 @@ trait ActionTrait
         $trace = debug_backtrace(0, $tracePos);
         $caller = $trace[$tracePos - 1];
         $args = $caller['args'] ?? [];
-        $parameters = $this->reflection()->parameters();
+        $parameters = static::reflection()->parameters();
         $pos = -1;
         $arguments = [];
         foreach ($parameters->keys() as $named) {
