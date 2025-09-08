@@ -37,7 +37,12 @@ interface ActionInterface
     /**
      * Returns asserted reflection against static rules.
      */
-    public static function reflection(): ReflectionActionInterface;
+    public static function newReflection(): ReflectionActionInterface;
+
+    /**
+     * Returns instance reflection.
+     */
+    public function reflection(): ReflectionActionInterface;
 
     /**
      * Assert `__invoke` arguments against defined rules.

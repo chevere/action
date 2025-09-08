@@ -35,10 +35,9 @@ trait ActionTrait
         }
 
         try {
-            $this->_reflection ??= static::reflection();
-            $this->assertRuntime($this->_reflection);
+            $this->assertRuntime($this->reflection());
 
-            return $this->_reflection->parameters()
+            return $this->reflection()->parameters()
                 ->__invoke(...$argument)
                 ->toArray();
         } catch (Throwable $e) {
@@ -55,10 +54,9 @@ trait ActionTrait
     public function assertReturn(mixed $value = null): mixed
     {
         try {
-            $this->_reflection ??= static::reflection();
-            $this->assertRuntime($this->_reflection);
+            $this->assertRuntime($this->reflection());
 
-            return $this->_reflection->return()->__invoke($value);
+            return $this->reflection()->return()->__invoke($value);
         } catch (Throwable $e) {
             throw new ActionException(
                 ...$this::getExceptionArguments($e),
@@ -74,7 +72,7 @@ trait ActionTrait
     final public static function parameters(): ParametersInterface
     {
         try {
-            $reflection = static::reflection();
+            $reflection = static::newReflection();
 
             return $reflection->parameters();
         } catch (Throwable $e) {
@@ -87,10 +85,8 @@ trait ActionTrait
 
     final public function assert(): void
     {
-        $this->_reflection ??= static::reflection();
-
         try {
-            $this->assertRuntime($this->_reflection);
+            $this->assertRuntime($this->reflection());
         } catch (Throwable $e) {
             throw new ActionException(
                 // @phpstan-ignore-next-line
@@ -99,7 +95,12 @@ trait ActionTrait
         }
     }
 
-    final public static function reflection(): ReflectionActionInterface
+    final public function reflection(): ReflectionActionInterface
+    {
+        return $this->_reflection ??= static::newReflection();
+    }
+
+    final public static function newReflection(): ReflectionActionInterface
     {
         $reflection = new ReflectionAction(static::class);
         static::assertStatic($reflection);
@@ -142,8 +143,7 @@ trait ActionTrait
         $trace = debug_backtrace(0, $tracePos);
         $caller = $trace[$tracePos - 1];
         $args = $caller['args'] ?? [];
-        $this->_reflection ??= static::reflection();
-        $parameters = $this->_reflection->parameters();
+        $parameters = $this->reflection()->parameters();
         $pos = -1;
         $arguments = [];
         foreach ($parameters->keys() as $named) {

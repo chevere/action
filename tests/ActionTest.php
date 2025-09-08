@@ -261,4 +261,21 @@ final class ActionTest extends TestCase
             new ActionTestAssertArgumentsImplicit()
         );
     }
+
+    public function testReflection(): void
+    {
+        $action = new ActionTestSensitiveParameter();
+        $this->assertSame(
+            $action->reflection(),
+            $action->reflection()
+        );
+        $this->assertEquals(
+            $action::newReflection(),
+            $action->reflection()
+        );
+        $this->assertNotSame(
+            $action::newReflection(),
+            $action->reflection()
+        );
+    }
 }
