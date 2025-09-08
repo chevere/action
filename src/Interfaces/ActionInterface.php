@@ -40,7 +40,7 @@ interface ActionInterface
     public static function reflection(): ReflectionActionInterface;
 
     /**
-     * Asserts action `__invoke` arguments against defined rules.
+     * Assert `__invoke` arguments against defined rules.
      *
      * @param mixed ...$argument Arguments to assert. If none provided will
      * take from caller backtrace.
@@ -49,7 +49,12 @@ interface ActionInterface
     public function assertArguments(mixed ...$argument): array;
 
     /**
-     * Asserts action return value against defined rules.
+     * Asserts return value against defined rules.
      */
     public function assertReturn(mixed $return): mixed;
+
+    /**
+     * Asserts rules coherence.
+     */
+    public function assert(): void;
 }

@@ -85,6 +85,20 @@ trait ActionTrait
         }
     }
 
+    final public function assert(): void
+    {
+        $this->_reflection ??= static::reflection();
+
+        try {
+            $this->assertRuntime($this->_reflection);
+        } catch (Throwable $e) {
+            throw new ActionException(
+                // @phpstan-ignore-next-line
+                ...self::getExceptionArguments($e),
+            );
+        }
+    }
+
     final public static function reflection(): ReflectionActionInterface
     {
         $reflection = new ReflectionAction(static::class);
@@ -104,7 +118,7 @@ trait ActionTrait
     }
 
     /**
-     * Enables to define extra parameter assertion before the run method is called.
+     * Enables to define runtime assertions that will run on `assert()`.
      *
      * @codeCoverageIgnore
      */
@@ -143,6 +157,9 @@ trait ActionTrait
         return $arguments;
     }
 
+    /**
+     * @infection-ignore-all
+     */
     private static function getExceptionArguments(Throwable $e): array
     {
         $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];

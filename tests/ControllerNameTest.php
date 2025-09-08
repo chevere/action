@@ -43,5 +43,6 @@ final class ControllerNameTest extends TestCase
         $className = ControllerNameTestController::class;
         $controllerName = new ControllerName($className);
         $this->assertSame($className, $controllerName->__toString());
+        $this->assertSame('Controller', $controllerName->symbol());
     }
 }

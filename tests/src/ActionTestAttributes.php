@@ -20,9 +20,15 @@ use Chevere\Parameter\Attributes\StringAttr;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use function Chevere\Parameter\string;
 
+/**
+ * Attributes take higher priority than method definitions.
+ */
 final class ActionTestAttributes extends Action
 {
-    #[ReturnAttr(new IntAttr(min: 1))]
+    #[ReturnAttr(
+        new IntAttr(min: 1)
+    )
+    ]
     public function __invoke(
         #[StringAttr('/^ab$/')]
         string $value

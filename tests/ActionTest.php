@@ -178,7 +178,7 @@ final class ActionTest extends TestCase
     {
         $action = new ActionTestAssertStatic();
         $this->assertFalse($action::isAsserted());
-        $action::reflection();
+        $action->assert();
         $this->assertTrue($action::isAsserted());
     }
 
