@@ -116,7 +116,7 @@ Invoke action's main logic passing the arguments you would pass to `__invoke`. A
 
 ```php
 $action = new MyAction();
-$result = $action('ok muy bueno');
+$result = $action->__invoke('ok muy bueno');
 ```
 
 ## Advanced use

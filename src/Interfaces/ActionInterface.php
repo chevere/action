@@ -25,31 +25,32 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
 interface ActionInterface
 {
     /**
-     * Provides access to parameters defined at the `__invoke` method.
+     * Provides access to parameters defined at the `__invoke()` method.
      */
     public static function parameters(): ParametersInterface;
 
     /**
-     * Defines expected return parameter validation for `__invoke` method.
+     * Defines expected return validation for `__invoke()` method return value.
      */
     public static function return(): ParameterInterface;
 
     /**
-     * Returns asserted reflection against static rules.
+     * Provide access to the reflection instance.
      */
     public static function reflection(): ReflectionActionInterface;
 
     /**
-     * Assert `__invoke` arguments against defined rules.
+     * Assert `__invoke()` arguments against defined rules.
      *
-     * @param mixed ...$argument Arguments to assert. If none provided will
-     * take from caller backtrace.
-     * @return array<int|string, mixed>
+     * @param mixed ...$argument Arguments to assert. If none provided will take from caller backtrace.
+     * @return array<int|string, mixed> Asserted arguments
      */
     public function assertArguments(mixed ...$argument): array;
 
     /**
      * Asserts return value against defined rules.
+     *
+     * @return mixed Asserted return value.
      */
     public function assertReturn(mixed $return): mixed;
 

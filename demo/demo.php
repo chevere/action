@@ -20,18 +20,24 @@ $arguments = [
     'ko',
     'ok malo pero por muy largo',
 ];
+echo <<<PLAIN
+Will return mb_strlen(\$argument) * 5
+--
+
+PLAIN;
 $action = new MyAction();
 foreach ($arguments as $argument) {
     try {
-        $return = $action($argument);
-        $return = $return->int();
+        $return = $action->__invoke($argument);
         echo <<<PLAIN
-        [OK] argument:{$argument} \n     return:{$return}
+        [OK] argument: {$argument}
+               return: {$return}
 
         PLAIN;
     } catch (Throwable $e) {
         echo <<<PLAIN
-        [ER] argument:{$argument} \n     error:{$e->getMessage()}
+        [ER] argument: {{$argument}}
+             error: {$e->getMessage()}
 
         PLAIN;
     }
