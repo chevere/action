@@ -20,9 +20,10 @@ use Chevere\Tests\src\ActionTestAssertArgumentsDefinedVars;
 use Chevere\Tests\src\ActionTestAssertArgumentsExplicit;
 use Chevere\Tests\src\ActionTestAssertArgumentsImplicit;
 use Chevere\Tests\src\ActionTestAssertRuntimeAction;
-use Chevere\Tests\src\ActionTestAssertStatic;
 use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
+use Chevere\Tests\src\ActionTestDefineStaticRules;
+use Chevere\Tests\src\ActionTestErrorDefineStaticRules;
 use Chevere\Tests\src\ActionTestIterableResponse;
 use Chevere\Tests\src\ActionTestIterableReturnError;
 use Chevere\Tests\src\ActionTestMethodParameterMissingType;
@@ -175,20 +176,40 @@ final class ActionTest extends TestCase
         $action->__invoke(value: 'ac');
     }
 
-    public function testAssert(): void
+    /**
+     * @dataProvider defineStaticRulesProvider
+     */
+    public function testDefineStaticRules(Closure $closure): void
     {
-        $action = new ActionTestAssertStatic();
-        $this->assertFalse($action::isAsserted());
-        $action->assert();
-        $this->assertTrue($action::isAsserted());
+        $action = new ActionTestErrorDefineStaticRules();
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            LogicException → Parameter \$lucho is forbidden
+            PLAIN
+        );
+        $closure($action);
     }
 
-    public function testAssertInvoke(): void
+    public static function defineStaticRulesProvider(): array
     {
-        $action = new ActionTestAssertStatic();
-        $this->assertFalse($action::isAsserted());
-        $action->__invoke();
-        $this->assertTrue($action::isAsserted());
+        return [
+            [
+                function (ActionInterface $action) {
+                    $action->assert();
+                },
+            ],
+            [
+                function (ActionInterface $action) {
+                    $action->assertArguments('test');
+                },
+            ],
+            [
+                function (ActionInterface $action) {
+                    $action->assertReturn(null);
+                },
+            ],
+        ];
     }
 
     public function testAssertRuntime(): void
@@ -287,8 +308,41 @@ final class ActionTest extends TestCase
 
     public function testReflectionCache(): void
     {
-        $reflection1 = ActionTestAssertStatic::reflection();
-        $reflection2 = ActionTestAssertStatic::reflection();
+        $reflection1 = ActionTestDefineStaticRules::reflection();
+        $reflection2 = ActionTestDefineStaticRules::reflection();
         $this->assertSame($reflection1, $reflection2);
+    }
+
+    public function testDefineStaticRulesAssertCache(): void
+    {
+        $action = new ActionTestDefineStaticRules();
+        $action->__invoke(0);
+        $this->assertCount(0, $action);
+        $action->assert();
+        $this->assertCount(1, $action);
+        $action->assert();
+        $this->assertCount(1, $action);
+    }
+
+    public function testDefineStaticRulesAssertArgumentsCache(): void
+    {
+        $action = new ActionTestDefineStaticRules();
+        $action->__invoke(0);
+        $this->assertCount(0, $action);
+        $action->assertArguments(1);
+        $this->assertCount(1, $action);
+        $action->assertArguments(2);
+        $this->assertCount(1, $action);
+    }
+
+    public function testDefineStaticRulesAssertReturnCache(): void
+    {
+        $action = new ActionTestDefineStaticRules();
+        $action->__invoke(0);
+        $this->assertCount(0, $action);
+        $action->assertReturn(1);
+        $this->assertCount(1, $action);
+        $action->assertReturn(2);
+        $this->assertCount(1, $action);
     }
 }

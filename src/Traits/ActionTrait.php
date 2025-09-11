@@ -28,13 +28,19 @@ trait ActionTrait
 {
     public function assertArguments(mixed ...$argument): array
     {
+        static $cache = [];
+
         if ($argument === []) {
             $argument = $this->takeArguments(1);
         }
 
         try {
             $reflection = static::reflection();
-            $this->assertRuntime($reflection);
+            if (! isset($cache[static::class])) {
+                static::defineStaticRules();
+                $this->defineRuntimeRules();
+                $cache[static::class] = true;
+            }
 
             return $reflection->parameters()
                 ->__invoke(...$argument)
@@ -52,9 +58,15 @@ trait ActionTrait
      */
     public function assertReturn(mixed $value = null): mixed
     {
+        static $cache = [];
+
         try {
             $reflection = static::reflection();
-            $this->assertRuntime($reflection);
+            if (! isset($cache[static::class])) {
+                static::defineStaticRules();
+                $this->defineRuntimeRules();
+                $cache[static::class] = true;
+            }
 
             return $reflection->return()->__invoke($value);
         } catch (Throwable $e) {
@@ -85,8 +97,15 @@ trait ActionTrait
 
     final public function assert(): void
     {
+        static $cache = [];
+
         try {
-            $this->assertRuntime(static::reflection());
+            if (! isset($cache[static::class])) {
+                static::reflection();
+                static::defineStaticRules();
+                $this->defineRuntimeRules();
+                $cache[static::class] = true;
+            }
         } catch (Throwable $e) {
             throw new ActionException(
                 // @phpstan-ignore-next-line
@@ -98,30 +117,25 @@ trait ActionTrait
     final public static function reflection(): ReflectionActionInterface
     {
         static $cache = [];
+        if (! isset($cache[static::class])) {
+            $cache[static::class] = new ReflectionAction(static::class);
+        }
 
-        $reflection = $cache[static::class] ??= new ReflectionAction(static::class);
-        static::assertStatic($reflection);
-        $cache[static::class] = $reflection;
-
-        return $reflection;
+        return $cache[static::class];
     }
 
     /**
-     * Enables to define extra parameter assertion before the run method is called.
-     *
      * @codeCoverageIgnore
      */
-    protected static function assertStatic(ReflectionActionInterface $reflection): void
+    public static function defineStaticRules(): void
     {
         // enables extra static assertion
     }
 
     /**
-     * Enables to define runtime assertions that will run on `assert()`.
-     *
      * @codeCoverageIgnore
      */
-    protected function assertRuntime(ReflectionActionInterface $reflection): void
+    public function defineRuntimeRules(): void
     {
         // enables extra runtime assertion
     }

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Action;
 
 use Chevere\Action\Interfaces\ControllerInterface;
-use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Action\Traits\ActionTrait;
 use InvalidArgumentException;
 use ReflectionNamedType;
@@ -24,12 +23,10 @@ abstract class Controller implements ControllerInterface
 {
     use ActionTrait;
 
-    // @infection-ignore-all
-    protected static function assertStatic(
-        ReflectionActionInterface $reflection
-    ): void {
+    public static function defineStaticRules(): void
+    {
         $invalid = [];
-        foreach ($reflection->method()->getParameters() as $parameter) {
+        foreach (static::reflection()->method()->getParameters() as $parameter) {
             $name = $parameter->getName();
             $type = $parameter->getType();
             if ($type === null) {

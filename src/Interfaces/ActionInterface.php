@@ -58,4 +58,14 @@ interface ActionInterface
      * Asserts rules coherence.
      */
     public function assert(): void;
+
+    /**
+     * Defines static assertion rules.
+     */
+    public static function defineStaticRules(): void;
+
+    /**
+     * Defines runtime assertion rules.
+     */
+    public function defineRuntimeRules(): void;
 }
