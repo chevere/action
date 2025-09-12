@@ -19,6 +19,8 @@ final class ControllerTestController extends Controller
 {
     public function __invoke(string $string): array
     {
-        return [];
+        $this->assertArguments();
+
+        return $this->assertReturn([]);
     }
 }

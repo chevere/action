@@ -173,35 +173,40 @@ $action::reflection()->parameters();
 $action::reflection()->return();
 ```
 
-### Define static rules method
+### Assert rules static method
 
-Use method `defineStaticRules()` to define extra static assertion rules to constrain your custom Action design. You can see this on the [Controller class](src/Controller.php) where this method is used to constrain `__invoke()` parameters to type string.
+This method is called before `assert*()` calls.
+
+Use method `assertRulesStatic()` to define additional static assertion rules to constrain your custom Action design. The purpose of this method is demonstrated at the [Controller class](src/Controller.php) to constrain the design by restricting `__invoke()` parameters to type string.
+
+This is very flexible and allows you to enforce specific design rules at the class level and for very specific cases, for example to forbid certain parameter names:
 
 ```php
-public static function defineStaticRules(): void {
+public static function assertRulesStatic(): void {
     if(static::reflection()->parameters()->has('lucho')) {
         throw new LogicException('Parameter $lucho is forbidden');
     }
 }
 ```
 
-### Define runtime rules method
+### Assert rules runtime method
 
-Use method `defineRuntimeRules()` to define runtime assertion rules. This method is hooked and called before `assertArguments()` and `assertReturn()`.
+This method is called before `assert*()` calls.
+
+Use method `assertRulesRuntime()` to define additional runtime assertion rules. The purpose of this method is demonstrated at the [HTTP Controller](https://github.com/chevere/http) to constrain the design by ensuring the existence of HTTP participants.
 
 ```php
-public function defineRuntimeRules(
-    ReflectionActionInterface $reflection
-): void {
-    if(!$this->flag) {
-        throw new LogicException('Runtime rules not satisfied');
+public function assertRulesRuntime(): void
+{
+    if (! isset($this->_query, $this->_bodyParsed, $this->_files)) {
+        throw new LogicException('Server request not set.');
     }
 }
 ```
 
 ## Controller
 
-The Controller is a special type of Action in charge of handling incoming instructions. Its `__invoke()` method only takes parameters of type `string`.
+The Controller is a special type of Action in charge of handling command instructions. Its `__invoke()` method only takes parameters of type `string`.
 
 ### Defining a Controller
 

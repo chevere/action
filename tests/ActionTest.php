@@ -23,7 +23,7 @@ use Chevere\Tests\src\ActionTestAssertRuntimeAction;
 use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
 use Chevere\Tests\src\ActionTestDefineStaticRules;
-use Chevere\Tests\src\ActionTestErrorDefineStaticRules;
+use Chevere\Tests\src\ActionTestDefineStaticRulesError;
 use Chevere\Tests\src\ActionTestIterableResponse;
 use Chevere\Tests\src\ActionTestIterableReturnError;
 use Chevere\Tests\src\ActionTestMethodParameterMissingType;
@@ -177,11 +177,11 @@ final class ActionTest extends TestCase
     }
 
     /**
-     * @dataProvider defineStaticRulesProvider
+     * @dataProvider assertRulesStaticProvider
      */
-    public function testDefineStaticRules(Closure $closure): void
+    public function testAssertRulesStatic(Closure $closure): void
     {
-        $action = new ActionTestErrorDefineStaticRules();
+        $action = new ActionTestDefineStaticRulesError();
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
@@ -191,7 +191,7 @@ final class ActionTest extends TestCase
         $closure($action);
     }
 
-    public static function defineStaticRulesProvider(): array
+    public static function assertRulesStaticProvider(): array
     {
         return [
             [
@@ -313,7 +313,7 @@ final class ActionTest extends TestCase
         $this->assertSame($reflection1, $reflection2);
     }
 
-    public function testDefineStaticRulesAssertCache(): void
+    public function testassertRulesStaticAssertCache(): void
     {
         $action = new ActionTestDefineStaticRules();
         $action->__invoke(0);
@@ -324,7 +324,7 @@ final class ActionTest extends TestCase
         $this->assertCount(1, $action);
     }
 
-    public function testDefineStaticRulesAssertArgumentsCache(): void
+    public function testAssertRulesStaticAssertArgumentsCache(): void
     {
         $action = new ActionTestDefineStaticRules();
         $action->__invoke(0);
@@ -335,7 +335,7 @@ final class ActionTest extends TestCase
         $this->assertCount(1, $action);
     }
 
-    public function testDefineStaticRulesAssertReturnCache(): void
+    public function testAssertRulesStaticAssertReturnCache(): void
     {
         $action = new ActionTestDefineStaticRules();
         $action->__invoke(0);

@@ -16,13 +16,13 @@ namespace Chevere\Tests\src;
 use Chevere\Action\Action;
 use LogicException;
 
-final class ActionTestErrorDefineStaticRules extends Action
+final class ActionTestDefineStaticRulesError extends Action
 {
     public function __invoke(string $lucho): void
     {
     }
 
-    public static function defineStaticRules(): void
+    public static function assertRulesStatic(): void
     {
         if (static::reflection()->parameters()->has('lucho')) {
             throw new LogicException('Parameter $lucho is forbidden');

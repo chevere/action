@@ -15,7 +15,7 @@ namespace Chevere\Tests\src;
 
 use Chevere\Action\Controller;
 
-final class ControllerTestInvalidController extends Controller
+final class ControllerTestControllerInvalid extends Controller
 {
     public function __invoke($mixed, int $int, int|string $var): array
     {

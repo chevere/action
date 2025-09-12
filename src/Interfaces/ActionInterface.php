@@ -62,10 +62,10 @@ interface ActionInterface
     /**
      * Defines static assertion rules.
      */
-    public static function defineStaticRules(): void;
+    public static function assertRulesStatic(): void;
 
     /**
      * Defines runtime assertion rules.
      */
-    public function defineRuntimeRules(): void;
+    public function assertRulesRuntime(): void;
 }

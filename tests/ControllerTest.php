@@ -16,7 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Tests\src\ControllerNameTestController;
 use Chevere\Tests\src\ControllerTestController;
-use Chevere\Tests\src\ControllerTestInvalidController;
+use Chevere\Tests\src\ControllerTestControllerInvalid;
 use PHPUnit\Framework\TestCase;
 
 final class ControllerTest extends TestCase
@@ -26,14 +26,14 @@ final class ControllerTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ControllerTestInvalidController` InvalidArgumentException → Parameter `mixed, int, var` must be of type **string** for controller `Chevere\Tests\src\ControllerTestInvalidController`
+            InvalidArgumentException → Parameter `mixed, int, var` must be of type **string** for controller `Chevere\Tests\src\ControllerTestControllerInvalid`
             PLAIN
         );
-        $controller = new ControllerTestInvalidController();
+        $controller = new ControllerTestControllerInvalid();
         $controller->__invoke(1, 1, 1);
     }
 
-    public function testConstruct(): void
+    public function testValid(): void
     {
         $this->expectNotToPerformAssertions();
         (new ControllerTestController())->__invoke('');

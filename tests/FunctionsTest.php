@@ -15,21 +15,26 @@ namespace Chevere\Tests;
 
 use Chevere\Tests\src\ActionTestAction;
 use PHPUnit\Framework\TestCase;
-use ReflectionMethod;
 use function Chevere\Action\getParameters;
-use function Chevere\Parameter\reflectionToParameters;
+use function Chevere\Action\getReturnParameter;
 
 final class FunctionsTest extends TestCase
 {
     public function testGetParameters(): void
     {
         $action = ActionTestAction::class;
-        $reflection = new ReflectionMethod($action, '__invoke');
-        $toParameters = reflectionToParameters($reflection);
-        $parameters = getParameters($action);
         $this->assertEquals(
-            $toParameters,
-            $parameters
+            $action::reflection()->parameters(),
+            getParameters($action)
+        );
+    }
+
+    public function testGetReturnParameter(): void
+    {
+        $action = ActionTestAction::class;
+        $this->assertEquals(
+            $action::reflection()->return(),
+            getReturnParameter($action)
         );
     }
 }

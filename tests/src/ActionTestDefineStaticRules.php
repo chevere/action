@@ -31,7 +31,7 @@ final class ActionTestDefineStaticRules extends Action implements Countable
         return static::$counter;
     }
 
-    public static function defineStaticRules(): void
+    public static function assertRulesStatic(): void
     {
         static::$counter++;
         if (static::reflection()->parameters()->has('lucho')) {
