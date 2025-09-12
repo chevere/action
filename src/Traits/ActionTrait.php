@@ -36,8 +36,8 @@ trait ActionTrait
         try {
             $reflection = static::reflection();
             if (! isset($cache[static::class])) {
-                static::assertRulesStatic();
-                $this->assertRulesRuntime();
+                static::acceptRulesStatic();
+                $this->acceptRulesRuntime();
                 $cache[static::class] = true;
             }
 
@@ -62,8 +62,8 @@ trait ActionTrait
         try {
             $reflection = static::reflection();
             if (! isset($cache[static::class])) {
-                static::assertRulesStatic();
-                $this->assertRulesRuntime();
+                static::acceptRulesStatic();
+                $this->acceptRulesRuntime();
                 $cache[static::class] = true;
             }
 
@@ -87,8 +87,8 @@ trait ActionTrait
         try {
             if (! isset($cache[static::class])) {
                 static::reflection();
-                static::assertRulesStatic();
-                $this->assertRulesRuntime();
+                static::acceptRulesStatic();
+                $this->acceptRulesRuntime();
                 $cache[static::class] = true;
             }
         } catch (Throwable $e) {
@@ -112,7 +112,7 @@ trait ActionTrait
     /**
      * @codeCoverageIgnore
      */
-    public static function assertRulesStatic(): void
+    public static function acceptRulesStatic(): void
     {
         // enables extra static assertion
     }
@@ -120,7 +120,7 @@ trait ActionTrait
     /**
      * @codeCoverageIgnore
      */
-    public function assertRulesRuntime(): void
+    public function acceptRulesRuntime(): void
     {
         // enables extra runtime assertion
     }

@@ -16,8 +16,8 @@ namespace Chevere\Tests;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
-use Chevere\Tests\src\ActionTestActionAssertRulesRuntime;
-use Chevere\Tests\src\ActionTestActionAssertRulesStatic;
+use Chevere\Tests\src\ActionTestActionacceptRulesRuntime;
+use Chevere\Tests\src\ActionTestActionacceptRulesStatic;
 use Chevere\Tests\src\ActionTestAssertArgumentsDefinedVars;
 use Chevere\Tests\src\ActionTestAssertArgumentsExplicit;
 use Chevere\Tests\src\ActionTestAssertArgumentsImplicit;
@@ -179,9 +179,9 @@ final class ActionTest extends TestCase
     }
 
     /**
-     * @dataProvider assertRulesStaticProvider
+     * @dataProvider acceptRulesStaticProvider
      */
-    public function testAssertRulesStatic(Closure $closure): void
+    public function testacceptRulesStatic(Closure $closure): void
     {
         $action = new ActionTestDefineStaticRulesError();
         $this->expectException(ActionException::class);
@@ -193,7 +193,7 @@ final class ActionTest extends TestCase
         $closure($action);
     }
 
-    public static function assertRulesStaticProvider(): array
+    public static function acceptRulesStaticProvider(): array
     {
         return [
             [
@@ -386,8 +386,8 @@ final class ActionTest extends TestCase
     public static function dataProviderTestAssertRules(): array
     {
         return [
-            [new ActionTestActionAssertRulesStatic()],
-            [new ActionTestActionAssertRulesRuntime()],
+            [new ActionTestActionacceptRulesStatic()],
+            [new ActionTestActionacceptRulesRuntime()],
         ];
     }
 }

@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 use Countable;
 use LogicException;
 
-final class ActionTestActionAssertRulesRuntime extends Action implements Countable
+final class ActionTestActionacceptRulesRuntime extends Action implements Countable
 {
     private int $counter;
 
@@ -31,7 +31,7 @@ final class ActionTestActionAssertRulesRuntime extends Action implements Countab
         return $this->counter;
     }
 
-    public function assertRulesRuntime(): void
+    public function acceptRulesRuntime(): void
     {
         $this->counter++;
         if ($this->counter < 0) {

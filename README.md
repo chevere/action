@@ -255,30 +255,30 @@ $action::reflection()->parameters();
 $action::reflection()->return();
 ```
 
-### Assert rules static method
+### Accept rules static method
 
 This method is called before `assert*()` calls.
 
-Use method `assertRulesStatic()` to define additional static assertion rules to constrain your custom Action design. The purpose of this method is demonstrated at the [Controller class](src/Controller.php) to constrain the design by restricting `__invoke()` parameters to type string.
+Use method `acceptRulesStatic()` to define additional static assertion rules to constrain your custom Action design. The purpose of this method is demonstrated at the [Controller class](src/Controller.php) to constrain the design by restricting `__invoke()` parameters to type string.
 
-This is very flexible and allows you to enforce specific design rules at the class level and for very specific cases, for example to forbid certain parameter names:
+This is very flexible and allows you to enforce advanced design rules at the class level and for very specific cases, for example to forbid certain parameter names:
 
 ```php
-public static function assertRulesStatic(): void {
+public static function acceptRulesStatic(): void {
     if(static::reflection()->parameters()->has('lucho')) {
         throw new LogicException('Parameter $lucho is forbidden');
     }
 }
 ```
 
-### Assert rules runtime method
+### Accept rules runtime method
 
 This method is called before `assert*()` calls.
 
-Use method `assertRulesRuntime()` to define additional runtime assertion rules. The purpose of this method is demonstrated at the [HTTP Controller](https://github.com/chevere/http) to constrain the design by ensuring the existence of HTTP participants.
+Use method `acceptRulesRuntime()` to define additional runtime assertion rules. The purpose of this method is demonstrated at the [HTTP Controller](https://github.com/chevere/http) to constrain the design by ensuring the existence of HTTP participants.
 
 ```php
-public function assertRulesRuntime(): void
+public function acceptRulesRuntime(): void
 {
     if (! isset($this->_query, $this->_bodyParsed, $this->_files)) {
         throw new LogicException('Server request not set.');

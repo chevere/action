@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 use Countable;
 use LogicException;
 
-final class ActionTestActionAssertRulesStatic extends Action implements Countable
+final class ActionTestActionacceptRulesStatic extends Action implements Countable
 {
     private static int $counter;
 
@@ -31,11 +31,11 @@ final class ActionTestActionAssertRulesStatic extends Action implements Countabl
         return static::$counter;
     }
 
-    public function assertRulesRuntime(): void
+    public function acceptRulesRuntime(): void
     {
     }
 
-    public static function assertRulesStatic(): void
+    public static function acceptRulesStatic(): void
     {
         static::$counter++;
         if (static::reflection()->parameters()->has('lucho')) {

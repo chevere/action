@@ -54,12 +54,12 @@ interface ActionInterface
     public function assert(): void;
 
     /**
-     * Defines static assertion rules.
+     * Defines static extra validation rules.
      */
-    public static function assertRulesStatic(): void;
+    public static function acceptRulesStatic(): void;
 
     /**
-     * Defines runtime assertion rules.
+     * Defines runtime extra validation rules.
      */
-    public function assertRulesRuntime(): void;
+    public function acceptRulesRuntime(): void;
 }

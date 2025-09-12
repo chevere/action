@@ -23,7 +23,7 @@ abstract class Controller implements ControllerInterface
 {
     use ActionTrait;
 
-    public static function assertRulesStatic(): void
+    public static function acceptRulesStatic(): void
     {
         $invalid = [];
         foreach (static::reflection()->method()->getParameters() as $parameter) {

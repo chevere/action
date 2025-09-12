@@ -22,7 +22,7 @@ final class ActionTestDefineStaticRulesError extends Action
     {
     }
 
-    public static function assertRulesStatic(): void
+    public static function acceptRulesStatic(): void
     {
         if (static::reflection()->parameters()->has('lucho')) {
             throw new LogicException('Parameter $lucho is forbidden');

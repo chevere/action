@@ -31,7 +31,7 @@ final class ActionTestAssertRuntimeAction extends Action
         return $this->flag;
     }
 
-    public function assertRulesRuntime(): void
+    public function acceptRulesRuntime(): void
     {
         $this->flag = true;
     }
