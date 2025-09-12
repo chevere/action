@@ -195,7 +195,7 @@ Use method `return()` to define return value assertion rules. In this context yo
 use Chevere\Action\Interfaces\ParameterInterface;
 use function Chevere\Parameter\string;
 
-public static function return(): ParameterInterface
+public static function acceptReturn(): ParameterInterface
 {
     return string();
 }
