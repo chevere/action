@@ -37,9 +37,9 @@ trait ActionTrait
             $reflection = static::reflection();
             if (! isset($cache[static::class])) {
                 static::acceptRulesStatic();
-                $this->acceptRulesRuntime();
                 $cache[static::class] = true;
             }
+            $this->acceptRulesRuntime();
 
             return $reflection->parameters()
                 ->__invoke(...$argument)
@@ -63,9 +63,9 @@ trait ActionTrait
             $reflection = static::reflection();
             if (! isset($cache[static::class])) {
                 static::acceptRulesStatic();
-                $this->acceptRulesRuntime();
                 $cache[static::class] = true;
             }
+            $this->acceptRulesRuntime();
 
             return $reflection->return()->__invoke($value);
         } catch (Throwable $e) {
@@ -88,9 +88,9 @@ trait ActionTrait
             if (! isset($cache[static::class])) {
                 static::reflection();
                 static::acceptRulesStatic();
-                $this->acceptRulesRuntime();
                 $cache[static::class] = true;
             }
+            $this->acceptRulesRuntime();
         } catch (Throwable $e) {
             throw new ActionException(
                 // @phpstan-ignore-next-line

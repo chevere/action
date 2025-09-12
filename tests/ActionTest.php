@@ -321,8 +321,11 @@ final class ActionTest extends TestCase
     /**
      * @dataProvider dataProviderTestAssertRules
      */
-    public function testAssertRulesAssertCache(ActionInterface $action): void
-    {
+    public function testAssertRulesAssertCache(
+        ActionInterface $action,
+        int $first,
+        int $second
+    ): void {
         $this->assertFalse(
             (new ReflectionMethod($action, 'assert'))
                 ->getStaticVariables()['cache'][$action::class] ?? false
@@ -334,16 +337,19 @@ final class ActionTest extends TestCase
             (new ReflectionMethod($action, 'assert'))
                 ->getStaticVariables()['cache'][$action::class] ?? false
         );
-        $this->assertCount(1, $action);
+        $this->assertCount($first, $action);
         $action->assert();
-        $this->assertCount(1, $action);
+        $this->assertCount($second, $action);
     }
 
     /**
      * @dataProvider dataProviderTestAssertRules
      */
-    public function testAssertRulesAssertArgumentsCache(ActionInterface $action): void
-    {
+    public function testAssertRulesAssertArgumentsCache(
+        ActionInterface $action,
+        int $first,
+        int $second
+    ): void {
         $this->assertFalse(
             (new ReflectionMethod($action, 'assertArguments'))
                 ->getStaticVariables()['cache'][$action::class] ?? false
@@ -355,17 +361,20 @@ final class ActionTest extends TestCase
             (new ReflectionMethod($action, 'assertArguments'))
                 ->getStaticVariables()['cache'][$action::class] ?? false
         );
-        $this->assertCount(1, $action);
+        $this->assertCount($first, $action);
         $action->assertArguments(2);
-        $this->assertCount(1, $action);
+        $this->assertCount($second, $action);
         $action->__invoke(0);
     }
 
     /**
      * @dataProvider dataProviderTestAssertRules
      */
-    public function testAssertRulesAssertReturnCache(ActionInterface $action): void
-    {
+    public function testAssertRulesAssertReturnCache(
+        ActionInterface $action,
+        int $first,
+        int $second
+    ): void {
         $this->assertFalse(
             (new ReflectionMethod($action, 'assertReturn'))
                 ->getStaticVariables()['cache'][$action::class] ?? false
@@ -377,17 +386,20 @@ final class ActionTest extends TestCase
             (new ReflectionMethod($action, 'assertReturn'))
                 ->getStaticVariables()['cache'][$action::class] ?? false
         );
-        $this->assertCount(1, $action);
+        $this->assertCount($first, $action);
         $action->assertReturn(2);
-        $this->assertCount(1, $action);
+        $this->assertCount($second, $action);
         $action->__invoke(0);
     }
 
+    /**
+     * Static rules runs once, runtime rules runs multiple times
+     */
     public static function dataProviderTestAssertRules(): array
     {
         return [
-            [new ActionTestActionAcceptRulesStatic()],
-            [new ActionTestActionAcceptRulesRuntime()],
+            [new ActionTestActionAcceptRulesStatic(), 1, 1],
+            [new ActionTestActionAcceptRulesRuntime(), 1, 2],
         ];
     }
 }
