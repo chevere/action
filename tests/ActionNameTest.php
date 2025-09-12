@@ -15,7 +15,8 @@ namespace Chevere\Tests;
 
 use Chevere\Action\ActionName;
 use Chevere\Action\Interfaces\ActionInterface;
-use Chevere\Tests\src\ControllerNameTestController;
+use Chevere\Tests\src\ActionNameTestAction;
+use Chevere\Tests\src\ActionNameTestActionSetUp;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
@@ -25,6 +26,7 @@ final class ActionNameTest extends TestCase
     {
         $interface = ActionName::interface();
         $this->assertSame(ActionInterface::class, $interface);
+        $this->assertSame('Action', ActionName::symbol());
     }
 
     public function testWrongInterface(): void
@@ -32,17 +34,65 @@ final class ActionNameTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Action `Chevere\Tests\ActionNameTest` doesn't implement `Chevere\Action\Interfaces\ActionInterface`
+            Action `` doesn't implement `Chevere\Action\Interfaces\ActionInterface`
             PLAIN
         );
-        new ActionName(self::class);
+        new ActionName('');
     }
 
     public function testConstruct(): void
     {
-        $className = ControllerNameTestController::class;
+        $className = ActionNameTestAction::class;
         $actionName = new ActionName($className);
         $this->assertSame($className, $actionName->__toString());
-        $this->assertSame('Action', $actionName->symbol());
+        $this->assertSame([], $actionName->arguments());
+    }
+
+    public function testConstructArgumentsNoSetup(): void
+    {
+        $className = ActionNameTestAction::class;
+        $arguments = ['arg1', 'arg2'];
+        $actionName = new ActionName($className, ...$arguments);
+        $this->assertSame([], $actionName->arguments());
+    }
+
+    /**
+     * @dataProvider provideConstructArguments
+     */
+    public function testConstructArgumentsSetup(
+        string $action,
+        array $arguments,
+        array $expectedArguments
+    ): void {
+        $actionName = new ActionName($action, ...$arguments);
+        $this->assertSame($expectedArguments, $actionName->arguments());
+    }
+
+    public static function provideConstructArguments(): array
+    {
+        return [
+            [
+                ActionNameTestActionSetUp::class,
+                [
+                    'foo',
+                    123,
+                ],
+                [
+                    'foo',
+                    123,
+                ],
+            ],
+            [
+                ActionNameTestActionSetUp::class,
+                [
+                    'test' => 'foo',
+                    'code' => 123,
+                ],
+                [
+                    'test' => 'foo',
+                    'code' => 123,
+                ],
+            ],
+        ];
     }
 }

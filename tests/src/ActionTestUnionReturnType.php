@@ -31,7 +31,7 @@ final class ActionTestUnionReturnType extends Action
         return $this->value;
     }
 
-    public static function return(): ParameterInterface
+    public static function acceptReturn(): ParameterInterface
     {
         return union(string(), int());
     }

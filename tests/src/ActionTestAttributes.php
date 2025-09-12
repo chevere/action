@@ -38,7 +38,7 @@ final class ActionTestAttributes extends Action
         return $this->assertReturn(1);
     }
 
-    public static function return(): ParameterInterface
+    public static function acceptReturn(): ParameterInterface
     {
         return string();
     }

@@ -17,7 +17,6 @@ use Chevere\Action\Exceptions\ActionException;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Action\ReflectionAction;
 use Chevere\Parameter\Interfaces\ParameterInterface;
-use Chevere\Parameter\Interfaces\ParametersInterface;
 use InvalidArgumentException;
 use ReflectionException;
 use Throwable;
@@ -76,23 +75,9 @@ trait ActionTrait
         }
     }
 
-    public static function return(): ParameterInterface
+    public static function acceptReturn(): ParameterInterface
     {
         return mixed();
-    }
-
-    final public static function parameters(): ParametersInterface
-    {
-        try {
-            $reflection = static::reflection();
-
-            return $reflection->parameters();
-        } catch (Throwable $e) {
-            throw new ActionException(
-                // @phpstan-ignore-next-line
-                ...self::getExceptionArguments($e),
-            );
-        }
     }
 
     final public function assert(): void

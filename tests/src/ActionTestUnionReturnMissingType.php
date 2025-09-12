@@ -26,7 +26,7 @@ final class ActionTestUnionReturnMissingType extends Action
         return $this->assertReturn(3.1);
     }
 
-    public static function return(): ParameterInterface
+    public static function acceptReturn(): ParameterInterface
     {
         return union(
             string(),

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Chevere\Action\Interfaces;
 
 use Chevere\Parameter\Interfaces\ParameterInterface;
-use Chevere\Parameter\Interfaces\ParametersInterface;
 
 /**
  * Describes the component in charge of defining a single logic action.
@@ -25,14 +24,9 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
 interface ActionInterface
 {
     /**
-     * Provides access to parameters defined at the `__invoke()` method.
-     */
-    public static function parameters(): ParametersInterface;
-
-    /**
      * Defines expected return validation for `__invoke()` method return value.
      */
-    public static function return(): ParameterInterface;
+    public static function acceptReturn(): ParameterInterface;
 
     /**
      * Provide access to the reflection instance.

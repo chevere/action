@@ -16,13 +16,14 @@ namespace Chevere\Tests;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
+use Chevere\Tests\src\ActionTestActionAssertRulesRuntime;
+use Chevere\Tests\src\ActionTestActionAssertRulesStatic;
 use Chevere\Tests\src\ActionTestAssertArgumentsDefinedVars;
 use Chevere\Tests\src\ActionTestAssertArgumentsExplicit;
 use Chevere\Tests\src\ActionTestAssertArgumentsImplicit;
 use Chevere\Tests\src\ActionTestAssertRuntimeAction;
 use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
-use Chevere\Tests\src\ActionTestDefineStaticRules;
 use Chevere\Tests\src\ActionTestDefineStaticRulesError;
 use Chevere\Tests\src\ActionTestIterableResponse;
 use Chevere\Tests\src\ActionTestIterableReturnError;
@@ -36,6 +37,7 @@ use Chevere\Tests\src\ActionTestUnionReturnMissingType;
 use Chevere\Tests\src\ActionTestUnionReturnType;
 use Closure;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 
 final class ActionTest extends TestCase
 {
@@ -60,7 +62,7 @@ final class ActionTest extends TestCase
 
     public function testParameters(): void
     {
-        $parameters = ActionTestController::parameters();
+        $parameters = ActionTestController::reflection()->parameters();
         $parameter = $parameters->get('name');
         $this->assertInstanceOf(StringParameterInterface::class, $parameter);
     }
@@ -155,7 +157,7 @@ final class ActionTest extends TestCase
 
     public function testAttributeParameters(): void
     {
-        $parameters = ActionTestAttributes::parameters();
+        $parameters = ActionTestAttributes::reflection()->parameters();
         $parameter = $parameters->required('value')->string();
         $this->assertSame(
             '/^ab$/',
@@ -306,43 +308,86 @@ final class ActionTest extends TestCase
         );
     }
 
-    public function testReflectionCache(): void
+    /**
+     * @dataProvider dataProviderTestAssertRules
+     */
+    public function testReflectionCache(ActionInterface $action): void
     {
-        $reflection1 = ActionTestDefineStaticRules::reflection();
-        $reflection2 = ActionTestDefineStaticRules::reflection();
+        $reflection1 = $action::reflection();
+        $reflection2 = $action::reflection();
         $this->assertSame($reflection1, $reflection2);
     }
 
-    public function testassertRulesStaticAssertCache(): void
+    /**
+     * @dataProvider dataProviderTestAssertRules
+     */
+    public function testAssertRulesAssertCache(ActionInterface $action): void
     {
-        $action = new ActionTestDefineStaticRules();
+        $this->assertFalse(
+            (new ReflectionMethod($action, 'assert'))
+                ->getStaticVariables()['cache'][$action::class] ?? false
+        );
         $action->__invoke(0);
         $this->assertCount(0, $action);
         $action->assert();
+        $this->assertTrue(
+            (new ReflectionMethod($action, 'assert'))
+                ->getStaticVariables()['cache'][$action::class] ?? false
+        );
         $this->assertCount(1, $action);
         $action->assert();
         $this->assertCount(1, $action);
     }
 
-    public function testAssertRulesStaticAssertArgumentsCache(): void
+    /**
+     * @dataProvider dataProviderTestAssertRules
+     */
+    public function testAssertRulesAssertArgumentsCache(ActionInterface $action): void
     {
-        $action = new ActionTestDefineStaticRules();
+        $this->assertFalse(
+            (new ReflectionMethod($action, 'assertArguments'))
+                ->getStaticVariables()['cache'][$action::class] ?? false
+        );
         $action->__invoke(0);
         $this->assertCount(0, $action);
         $action->assertArguments(1);
+        $this->assertTrue(
+            (new ReflectionMethod($action, 'assertArguments'))
+                ->getStaticVariables()['cache'][$action::class] ?? false
+        );
         $this->assertCount(1, $action);
         $action->assertArguments(2);
         $this->assertCount(1, $action);
+        $action->__invoke(0);
     }
 
-    public function testAssertRulesStaticAssertReturnCache(): void
+    /**
+     * @dataProvider dataProviderTestAssertRules
+     */
+    public function testAssertRulesAssertReturnCache(ActionInterface $action): void
     {
-        $action = new ActionTestDefineStaticRules();
+        $this->assertFalse(
+            (new ReflectionMethod($action, 'assertReturn'))
+                ->getStaticVariables()['cache'][$action::class] ?? false
+        );
         $action->__invoke(0);
         $this->assertCount(0, $action);
         $action->assertReturn(1);
+        $this->assertTrue(
+            (new ReflectionMethod($action, 'assertReturn'))
+                ->getStaticVariables()['cache'][$action::class] ?? false
+        );
         $this->assertCount(1, $action);
         $action->assertReturn(2);
         $this->assertCount(1, $action);
+        $action->__invoke(0);
+    }
+
+    public static function dataProviderTestAssertRules(): array
+    {
+        return [
+            [new ActionTestActionAssertRulesStatic()],
+            [new ActionTestActionAssertRulesRuntime()],
+        ];
     }
 }

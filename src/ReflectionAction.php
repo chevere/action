@@ -72,7 +72,7 @@ final class ReflectionAction implements ReflectionActionInterface
         $this->parameters = reflectionToParameters($this->method);
         $attributes = $this->method->getAttributes(ReturnAttr::class);
         $this->return = match (true) {
-            $attributes === [] => $action::return(),
+            $attributes === [] => $action::acceptReturn(),
             default => reflectionToReturn($this->method),
         };
         if (! $this->method->hasReturnType()) {

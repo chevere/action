@@ -108,7 +108,9 @@ class MyAction extends Action
 
 The code above demonstrates how to create an Action class with input validation and output assertion. The `$value` argument must match the regular expression `/^ok/` and the return value must be an integer between 0 and 100. See Advanced use for alternative approaches.
 
-## Using actions
+## Using Action
+
+### Invoking Actions
 
 Invoke action's `__invoke()` method, same as a function. Action internal runtime will assert arguments and return against your expectations.
 
@@ -118,6 +120,65 @@ Invoke action's `__invoke()` method, same as a function. Action internal runtime
 $action = new MyAction();
 $result = $action->__invoke('ok muy bueno');
 $result = $action('ok muy bueno'); // same thing
+```
+
+### ActionName
+
+Actions can use the `public function setUp(...)` method to define logic which must be executed before the Action is invoked.
+
+For example, an Action may define to require setup location and code arguments:
+
+```php
+use Chevere\Action\Action;
+
+class Redirect extends Action
+{
+    public function setUp(string $location, int $code): void
+    {
+        $this->location = $location;
+        $this->code = $code;
+    }
+}
+```
+
+With `ActionName` you can store the Action name and its `setUp()` arguments:
+
+```php
+use Chevere\Action\ActionName;
+
+$actionName = new ActionName(Redirect::class, $location, $code);
+```
+
+Which you can later use directly:
+
+```php
+$className = (string) $actionName;
+$action = new $className();
+$action->setUp(...$actionName->arguments());
+```
+
+Or craft your own `ActionName` accessors directly on your Actions:
+
+```php
+use Chevere\Action\Action;
+use Chevere\Action\ActionName;
+use Chevere\Action\Interfaces\ActionNameInterface;
+
+class Redirect extends Action
+{
+    // setUp(...)
+
+    public static function with(string $location, int $code): ActionNameInterface
+    {
+        return new ActionName(static::class, ...get_defined_vars());
+    }
+}
+```
+
+Which you can later use like this:
+
+```php
+$redirect = Redirect::with('some/location', 302);
 ```
 
 ## Advanced use

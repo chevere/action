@@ -16,7 +16,8 @@ namespace Chevere\Action\Interfaces;
 use Stringable;
 
 /**
- * Describes the component in charge of handling Action name.
+ * Describes the component in charge of handling Action participants.
+ * Will contain the Action name plus its setUp arguments.
  */
 interface ActionNameInterface extends Stringable
 {
@@ -26,7 +27,7 @@ interface ActionNameInterface extends Stringable
     public function __toString(): string;
 
     /**
-     * @return array<string,mixed> Arguments to be passed to the named class `setUp` method.
+     * @return array<string|int, mixed> Arguments to be passed to the named class `setUp` method.
      */
     public function arguments(): array;
 
@@ -34,4 +35,17 @@ interface ActionNameInterface extends Stringable
      * Returns a boolean if the object has this class as one of its parents or implements it.
      */
     public function isSubclassOf(string $class): bool;
+
+    /**
+     * Returns the symbol representing the named class type.
+     * e.g. "Action", "Controller"
+     */
+    public static function symbol(): string;
+
+    /**
+     * Returns the interface that the named class must implement.
+     *
+     * @return class-string
+     */
+    public static function interface(): string;
 }

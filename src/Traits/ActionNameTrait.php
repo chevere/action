@@ -13,15 +13,31 @@ declare(strict_types=1);
 
 namespace Chevere\Action\Traits;
 
+use Chevere\Parameter\Arguments;
 use InvalidArgumentException;
+use ReflectionMethod;
 use function Chevere\Message\message;
+use function Chevere\Parameter\reflectionToParameters;
 
 trait ActionNameTrait
 {
+    /**
+     * @var array<string|int, mixed>
+     */
+    private array $arguments;
+
     public function __construct(
-        private string $name
+        private string $name,
+        mixed ...$arguments
     ) {
         $this->onConstruct();
+        $this->arguments = [];
+        if (method_exists($this->name, 'setUp')) {
+            $parameters = reflectionToParameters(
+                new ReflectionMethod($this->name, 'setUp')
+            );
+            $this->arguments = (new Arguments($parameters, $arguments))->toArray();
+        }
     }
 
     public function __toString(): string
@@ -30,9 +46,12 @@ trait ActionNameTrait
         return $this->name;
     }
 
+    /**
+     * @return array<string|int, mixed>
+     */
     public function arguments(): array
     {
-        return [];
+        return $this->arguments;
     }
 
     public function isSubclassOf(string $class): bool

@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 use Countable;
 use LogicException;
 
-final class ActionTestDefineStaticRules extends Action implements Countable
+final class ActionTestActionAssertRulesStatic extends Action implements Countable
 {
     private static int $counter;
 
@@ -29,6 +29,10 @@ final class ActionTestDefineStaticRules extends Action implements Countable
     public function count(): int
     {
         return static::$counter;
+    }
+
+    public function assertRulesRuntime(): void
+    {
     }
 
     public static function assertRulesStatic(): void
