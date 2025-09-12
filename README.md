@@ -32,7 +32,7 @@ composer require chevere/action
 
 To create an Action class implement the [ActionInterface](src/interfaces/ActionInterface.php) either with [use ActionTrait](#use-actiontrait) or by [extends Action](#extends-action).
 
-## Use ActionTrait
+### Use ActionTrait
 
 To create an action by using [ActionTrait](src/Traits/ActionTrait.php):
 
@@ -47,7 +47,7 @@ class MyAction implements ActionInterface
 }
 ```
 
-## Extends Action
+### Extends Action
 
 To create an Action by extending [Action](src/Action.php):
 
