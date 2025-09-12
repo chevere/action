@@ -16,8 +16,8 @@ namespace Chevere\Tests;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
-use Chevere\Tests\src\ActionTestActionacceptRulesRuntime;
-use Chevere\Tests\src\ActionTestActionacceptRulesStatic;
+use Chevere\Tests\src\ActionTestActionAcceptRulesRuntime;
+use Chevere\Tests\src\ActionTestActionAcceptRulesStatic;
 use Chevere\Tests\src\ActionTestAssertArgumentsDefinedVars;
 use Chevere\Tests\src\ActionTestAssertArgumentsExplicit;
 use Chevere\Tests\src\ActionTestAssertArgumentsImplicit;
@@ -386,8 +386,8 @@ final class ActionTest extends TestCase
     public static function dataProviderTestAssertRules(): array
     {
         return [
-            [new ActionTestActionacceptRulesStatic()],
-            [new ActionTestActionacceptRulesRuntime()],
+            [new ActionTestActionAcceptRulesStatic()],
+            [new ActionTestActionAcceptRulesRuntime()],
         ];
     }
 }

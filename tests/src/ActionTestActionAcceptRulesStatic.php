@@ -17,7 +17,7 @@ use Chevere\Action\Action;
 use Countable;
 use LogicException;
 
-final class ActionTestActionacceptRulesStatic extends Action implements Countable
+final class ActionTestActionAcceptRulesStatic extends Action implements Countable
 {
     private static int $counter;
 
