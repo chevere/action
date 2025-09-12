@@ -203,10 +203,31 @@ public static function acceptReturn(): ParameterInterface
 
 ### Assert arguments method
 
-Use method `assertArguments()` to assert Action's `__invoke()` arguments against your expectations.
+Use method `assertArguments()` to assert Action's `__invoke()` arguments against your expectations. When `assertArguments()` method is called without arguments, it will magic take the arguments from the function caller context.
 
 ```php
+// magic
+$action->assertArguments();
+// explicit
 $action->assertArguments(...$args);
+// explicit, all defined vars
+$action->assertArguments(...get_defined_vars());
+```
+
+All the following sample definitions are equivalent in results and will evaluate the same arguments.
+
+```php
+public function __invoke($foo, $bar): void {
+    $this->assertArguments();
+}
+
+public function __invoke($foo, $bar): void {
+    $this->assertArguments($foo, $bar);
+}
+
+public function __invoke($foo, $bar): void {
+    $this->assertArguments(...get_defined_vars());
+}
 ```
 
 ### Assert return method
