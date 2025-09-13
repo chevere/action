@@ -86,9 +86,6 @@ use Chevere\Parameter\Attributes\IntAttr;
 use Chevere\Parameter\Attributes\ReturnAttr;
 use Chevere\Parameter\Attributes\StringAttr;
 
-use function Chevere\Parameter\valid;
-use function Chevere\Parameter\returnAttr;
-
 class MyAction extends Action
 {
     #[ReturnAttr(
