@@ -142,7 +142,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestNoReturnTypeError` TypeError → Action `__invoke` method must declare `array` return type
+            `{$class}` TypeError → Action `__invoke` method must declare `array` return type
             PLAIN
         );
         $action->__invoke();

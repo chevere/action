@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Chevere\Action\Interfaces;
 
 /**
- * A Controller is an action that only accepts string parameters on main method.
+ * A Controller is an action that only accepts string parameters on `__invoke` method.
  */
 interface ControllerInterface extends ActionInterface
 {
