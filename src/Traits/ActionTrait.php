@@ -168,10 +168,10 @@ trait ActionTrait
         );
 
         return [
-            $message,
-            $e,
-            $caller['file'] ?? 'na',
-            $caller['line'] ?? 0,
+            'message' => $message,
+            'previous' => $e,
+            'file' => $caller['file'] ?? 'na',
+            'line' => $caller['line'] ?? 0,
         ];
     }
 }
