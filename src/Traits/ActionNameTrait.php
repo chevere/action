@@ -74,7 +74,9 @@ trait ActionNameTrait
 
         throw new InvalidArgumentException(
             (string) message(
-                "{{ action }} `{{ name }}` doesn't implement `{{ interface }}`",
+                class_exists($this->name)
+                    ? "{{ action }} `{{ name }}` doesn't implement `{{ interface }}`"
+                    : '{{ action }} `{{ name }}` does not exist',
                 action: $this::symbol(),
                 name: $this->name,
                 interface: $this->interface()
