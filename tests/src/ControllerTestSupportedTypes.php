@@ -15,12 +15,10 @@ namespace Chevere\Tests\src;
 
 use Chevere\Action\Controller;
 
-final class ControllerTestControllerInvalid extends Controller
+final class ControllerTestSupportedTypes extends Controller
 {
-    public function __invoke($mixed, int $int, int|string $var): array
+    public function __invoke(int $int, int|string $var, float $float): array
     {
-        $this->assertArguments(...get_defined_vars());
-
         return [];
     }
 }

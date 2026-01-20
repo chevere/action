@@ -28,7 +28,6 @@ trait ActionTrait
     public function assertArguments(mixed ...$argument): array
     {
         static $cache = [];
-
         if ($argument === []) {
             $argument = $this->takeArguments(1);
         }

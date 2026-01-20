@@ -2,11 +2,11 @@
 
 ![Chevere](chevere.svg)
 
-[![Build](https://img.shields.io/github/actions/workflow/status/chevere/action/test.yml?branch=2.0&style=flat-square)](https://github.com/chevere/action/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/chevere/action/test.yml?branch=2.1&style=flat-square)](https://github.com/chevere/action/actions)
 ![Code size](https://img.shields.io/github/languages/code-size/chevere/action?style=flat-square)
 [![Apache-2.0](https://img.shields.io/github/license/chevere/action?style=flat-square)](LICENSE)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%209-blueviolet?style=flat-square)](https://phpstan.org/)
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fchevere%2Faction%2F2.0)](https://dashboard.stryker-mutator.io/reports/github.com/chevere/action/2.0)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fchevere%2Faction%2F2.1)](https://dashboard.stryker-mutator.io/reports/github.com/chevere/action/2.1)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=alert_status)](https://sonarcloud.io/dashboard?id=chevere_action)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=chevere_action)
@@ -285,7 +285,7 @@ public function acceptRulesRuntime(): void
 
 ## Controller
 
-The Controller is a special type of Action in charge of handling command instructions. Its `__invoke()` method only takes parameters of type `string`.
+The Controller is a special type of Action in charge of handling command-like instructions. Its `__invoke()` method only takes parameters of type `string|int|float`.
 
 ### Defining a Controller
 
@@ -302,12 +302,12 @@ class SomeController extends Controller
 
 ### Invoke parameters
 
-Parameters are defined in the `__invoke()` method but it just takes strings.
+Parameters are defined in the `__invoke()` method but it just takes type `string`, `int`, or `float`.
 
 ```php
 public function __invoke(
     string $pepito,
-    string $paysTwice
+    int $paysTwice
 ): array
 {
     // ...

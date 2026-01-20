@@ -34,27 +34,31 @@ abstract class Controller implements ControllerInterface
 
                 continue;
             }
-            if ($type instanceof ReflectionNamedType) {
-                $type = $type->getName();
-                if ($type !== 'string') {
+            $types = match (true) {
+                $type instanceof ReflectionNamedType => [$type],
+                default => $type->getTypes(), // @phpstan-ignore-line
+            };
+            foreach ($types as $item) {
+                /** @var ReflectionNamedType $item */
+                if (! in_array($item->getName(), ['string', 'float', 'int'], true)) {
                     $invalid[] = $name;
-                }
 
-                continue;
+                    break;
+                }
             }
-            $invalid[] = $name;
         }
         if ($invalid === []) {
             return;
         }
-        $names = implode(', ', $invalid);
+        $names = implode('`, `', $invalid);
+        $subjects = "`{$names}`";
 
         throw new InvalidArgumentException(
             (string) message(
-                'Parameter `%names%` must be of type **%type%** for controller `%className%`',
-                names: $names,
-                type: 'string',
-                className: static::class
+                'Parameter(s) %parameters% must be compatible with type **%type%** at `%method%` method',
+                parameters: $subjects,
+                type: 'string|int|float',
+                method: static::class . '->__invoke()',
             )
         );
     }
