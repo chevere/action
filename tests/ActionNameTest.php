@@ -19,6 +19,7 @@ use Chevere\Tests\src\ActionNameTestAction;
 use Chevere\Tests\src\ActionNameTestActionSetUp;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class ActionNameTest extends TestCase
 {
@@ -29,15 +30,26 @@ final class ActionNameTest extends TestCase
         $this->assertSame('Action', ActionName::symbol());
     }
 
+    public function testExists(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            Action `` doesn't exist
+            PLAIN
+        );
+        new ActionName('');
+    }
+
     public function testWrongInterface(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            Action `` doesn't implement `Chevere\Action\Interfaces\ActionInterface`
+            Action `stdClass` doesn't implement `Chevere\Action\Interfaces\ActionInterface`
             PLAIN
         );
-        new ActionName('');
+        new ActionName(stdClass::class);
     }
 
     public function testConstruct(): void

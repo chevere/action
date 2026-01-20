@@ -76,7 +76,7 @@ trait ActionNameTrait
             (string) message(
                 class_exists($this->name)
                     ? "{{ action }} `{{ name }}` doesn't implement `{{ interface }}`"
-                    : '{{ action }} `{{ name }}` does not exist',
+                    : "{{ action }} `{{ name }}` doesn't exist",
                 action: $this::symbol(),
                 name: $this->name,
                 interface: $this->interface()
