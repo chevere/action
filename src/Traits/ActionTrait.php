@@ -21,7 +21,6 @@ use Chevere\Parameter\Interfaces\ParametersAccessInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use InvalidArgumentException;
 use ReflectionException;
-use SebastianBergmann\Type\Parameter;
 use Throwable;
 use function Chevere\Message\message;
 use function Chevere\Parameter\mixed;
