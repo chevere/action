@@ -17,11 +17,15 @@ use Chevere\Action\Exceptions\ActionException;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
 use Chevere\Action\ReflectionAction;
 use Chevere\Parameter\Interfaces\ParameterInterface;
+use Chevere\Parameter\Interfaces\ParametersAccessInterface;
+use Chevere\Parameter\Interfaces\ParametersInterface;
 use InvalidArgumentException;
 use ReflectionException;
+use SebastianBergmann\Type\Parameter;
 use Throwable;
 use function Chevere\Message\message;
 use function Chevere\Parameter\mixed;
+use function Chevere\Parameter\parameters;
 
 trait ActionTrait
 {
@@ -114,6 +118,12 @@ trait ActionTrait
     public static function acceptRulesStatic(): void
     {
         // enables extra static assertion
+    }
+
+    public static function acceptParameters(): ParametersInterface|ParametersAccessInterface
+    {
+        // enables alternative parameter definition
+        return parameters();
     }
 
     /**

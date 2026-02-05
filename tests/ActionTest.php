@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Parameter\Interfaces\StringParameterInterface;
+use Chevere\Tests\src\ActionTestAcceptParameters;
 use Chevere\Tests\src\ActionTestActionAcceptRulesRuntime;
 use Chevere\Tests\src\ActionTestActionAcceptRulesStatic;
 use Chevere\Tests\src\ActionTestAssertArgumentsDefinedVars;
@@ -401,5 +402,18 @@ final class ActionTest extends TestCase
             [new ActionTestActionAcceptRulesStatic(), 1, 1],
             [new ActionTestActionAcceptRulesRuntime(), 1, 2],
         ];
+    }
+
+    public function testAcceptParameters(): void
+    {
+        $action = new ActionTestAcceptParameters();
+        $action->__invoke('ok');
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            `Chevere\Tests\src\ActionTestAcceptParameters` InvalidArgumentException → [foo]: Argument value provided `ko` doesn't match the regex `/^ok$/`
+            PLAIN
+        );
+        $action->__invoke('ko');
     }
 }

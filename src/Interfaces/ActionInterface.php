@@ -14,15 +14,26 @@ declare(strict_types=1);
 namespace Chevere\Action\Interfaces;
 
 use Chevere\Parameter\Interfaces\ParameterInterface;
+use Chevere\Parameter\Interfaces\ParametersAccessInterface;
+use Chevere\Parameter\Interfaces\ParametersInterface;
 
 /**
  * Describes the component in charge of defining a single logic action.
- * Use mixed __invoke() to define the action main logic.
+ * Use __invoke() method to define the action main logic.
  *
  * @method mixed __invoke()
  */
 interface ActionInterface
 {
+    /**
+     * Defines parameter validation for `__invoke()` argument values.
+     *
+     * This definition is an alternative to using `__invoke()` parameter
+     * attributes, intended for cases where attributes are limited
+     * (literal values, constant expressions).
+     */
+    public static function acceptParameters(): ParametersInterface|ParametersAccessInterface;
+
     /**
      * Defines expected return validation for `__invoke()` method return value.
      */

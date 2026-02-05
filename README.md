@@ -182,9 +182,35 @@ $redirect = Redirect::with('some/location', 302);
 
 This library offers flexible validation strategies to match your application's architecture. While embedding assertions within the `__invoke()` method provides maximum portability, you can also implement centralized validation logic or delegate validation responsibilities to callers. The following methods enable fine-grained control over where and how validations are performed across.
 
+### Accept parameters method
+
+Use method `acceptParameters()` to define parameter assertion rules. In this context you can use and remix any [Parameter function](https://chevere.org/packages/parameter.html#reference).
+
+```php
+use Chevere\Parameter\Interfaces\ParametersAccessInterface;
+use Chevere\Parameter\Interfaces\ParametersInterface;
+use function Chevere\Parameter\parameters;
+use function Chevere\Parameter\string;
+
+public function __invoke(
+    string $foo
+): int {
+    // ...
+}
+
+public static function acceptParameters(): ParametersInterface|ParametersAccessInterface
+{
+    return parameters(
+        foo: string('/^ok/'),
+    );
+}
+```
+
+**Note:** Attribute notation on `__invoke()` parameters will be ignored if `acceptParameters()` is defined.
+
 ### Accept return method
 
-Use method `acceptReturn()` to define return value assertion rules. In this context you can use and remix any [Parameter function](https://github.com/chevere/parameter#function-reference).
+Use method `acceptReturn()` to define return value assertion rules. In this context you can use and remix any [Parameter function](https://chevere.org/packages/parameter.html#reference).
 
 **Note:** Attribute notation `#[ReturnAttr]` has greater precedence than `acceptReturn()`.
 

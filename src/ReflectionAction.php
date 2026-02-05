@@ -26,6 +26,7 @@ use ReflectionNamedType;
 use ReflectionUnionType;
 use TypeError;
 use function Chevere\Message\message;
+use function Chevere\Parameter\getParameters;
 use function Chevere\Parameter\reflectionToParameters;
 use function Chevere\Parameter\reflectionToReturn;
 
@@ -69,7 +70,11 @@ final class ReflectionAction implements ReflectionActionInterface
             );
         }
         $this->method = new ReflectionMethod($action, '__invoke');
-        $this->parameters = reflectionToParameters($this->method);
+        $acceptParameters = getParameters($action::acceptParameters());
+        $this->parameters = match (true) {
+            count($acceptParameters) !== 0 => $acceptParameters,
+            default => reflectionToParameters($this->method),
+        };
         $attributes = $this->method->getAttributes(ReturnAttr::class);
         $this->return = match (true) {
             $attributes === [] => $action::acceptReturn(),
