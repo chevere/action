@@ -206,13 +206,13 @@ public static function acceptParameters(): ParametersInterface|ParametersAccessI
 }
 ```
 
-**Note:** Attribute notation on `__invoke()` parameters will be ignored if `acceptParameters()` is defined.
+**Note:** The attribute notation on `__invoke()` parameters is ignored if `acceptParameters()` does not return `MixedParameterInterface`.
 
 ### Accept return method
 
 Use method `acceptReturn()` to define return value assertion rules. In this context you can use and remix any [Parameter function](https://chevere.org/packages/parameter.html#reference).
 
-**Note:** Attribute notation `#[ReturnAttr]` has greater precedence than `acceptReturn()`.
+**Note:** The `#[ReturnAttr]` attribute on the `__invoke()` return value is ignored if `acceptReturn()` does not return `MixedParameterInterface`.
 
 ```php
 use Chevere\Action\Interfaces\ParameterInterface;

@@ -14,21 +14,20 @@ declare(strict_types=1);
 namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
-use Chevere\Parameter\Attributes\IntAttr;
+use Chevere\Parameter\Attributes\BoolAttr;
 use Chevere\Parameter\Attributes\ReturnAttr;
 use Chevere\Parameter\Attributes\StringAttr;
 use Chevere\Parameter\Interfaces\ParameterInterface;
-use function Chevere\Parameter\string;
+use function Chevere\Parameter\int;
 
 /**
- * Attributes take higher priority than method definitions.
+ * Method `acceptReturn()` has higher priority than ReturnAttr, which is ignored.
  */
 final class ActionTestAttributes extends Action
 {
     #[ReturnAttr(
-        new IntAttr(min: 1)
-    )
-    ]
+        new BoolAttr()
+    )]
     public function __invoke(
         #[StringAttr('/^ab$/')]
         string $value
@@ -40,6 +39,6 @@ final class ActionTestAttributes extends Action
 
     public static function acceptReturn(): ParameterInterface
     {
-        return string();
+        return int();
     }
 }
