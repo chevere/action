@@ -18,7 +18,7 @@
 
 ## Summary
 
-Action implements the Action Design Pattern (a variant of the Command Pattern) that encapsulates operations as reusable, self-validating objects. Built on the [Parameter](https://github.com/chevere/parameter) library, it provides a robust framework for defining business logic with strict input/output validation, promoting type safety and reducing boilerplate code across your application.
+**Chevere Action** is a PHP library that encapsulates application operations as reusable, self-validating objects. Built on the [Parameter](https://github.com/chevere/parameter) library, it implements the Action Design Pattern to enforce strict input/output validation at the class level, reducing runtime errors and improving code reliability with minimal boilerplate.
 
 ## Installing
 
@@ -28,321 +28,386 @@ Action is available through [Packagist](https://packagist.org/packages/chevere/a
 composer require chevere/action
 ```
 
-## Quick start
+## Quick Start
 
-To create an Action class implement the [ActionInterface](src/interfaces/ActionInterface.php) either with [use ActionTrait](#use-actiontrait) or by [extends Action](#extends-action).
+### Creating an Action
 
-### Use ActionTrait
+Create an Action by implementing the `ActionInterface` either by using `ActionTrait` or extending the `Action` class:
 
-To create an action by using [ActionTrait](src/Traits/ActionTrait.php):
+#### Using ActionTrait
 
 ```php
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\Traits\ActionTrait;
 
-class MyAction implements ActionInterface
+class GetUserAction implements ActionInterface
 {
     use ActionTrait;
-    // ...
-}
-```
 
-### Extends Action
-
-To create an Action by extending [Action](src/Action.php):
-
-```php
-use Chevere\Action\Action;
-
-class MyAction extends Action
-{
-    // ...
-}
-```
-
-### Invoke method
-
-Use the `__invoke()` method to determine action main logic. Use **attributes** from [chevere/parameter](https://github.com/chevere/parameter) on both parameters and return to add assertion rules.
-
-* Before assertion rules:
-
-```php
-class MyAction
-{
-    public function __invoke(
-        string $value
-    ): int
+    public function __invoke(int $userId): array
     {
-        return mb_strlen($value) * 5;
+        return ['id' => $userId, 'name' => 'John'];
     }
 }
 ```
 
-* After assertion rules:
+#### Extending Action
 
 ```php
 use Chevere\Action\Action;
-use Chevere\Parameter\Attributes\IntAttr;
-use Chevere\Parameter\Attributes\ReturnAttr;
-use Chevere\Parameter\Attributes\StringAttr;
 
-class MyAction extends Action
+class GetUserAction extends Action
+{
+    public function __invoke(int $userId): array
+    {
+        return ['id' => $userId, 'name' => 'John'];
+    }
+}
+```
+
+### Adding Validation
+
+Enhance Actions with input and output validation using attributes from the Parameter library:
+
+```php
+use Chevere\Action\Action;
+use Chevere\Parameter\Attributes\ArrayAttr;
+use Chevere\Parameter\Attributes\IntAttr;
+use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Parameter\Attributes\ReturnAttr;
+
+class GetUserAction extends Action
 {
     #[ReturnAttr(
-        new IntAttr(min: 0, max: 100)
+        new ArrayAttr(
+            userId: new IntAttr(min: 1),
+            name: new StringAttr(),
+        )
     )]
     public function __invoke(
-        #[StringAttr('/^ok/')]
-        string $value
-    ): int {
-        $this->assertArguments($value);
-        return $this->assertReturn(
-            mb_strlen($value) * 5
+        #[IntAttr(min: 1)]
+        int $userId
+    ): array {
+        $this->assertArguments($userId);
+
+        $result = ['id' => $userId, 'name' => 'John'];
+
+        return $this->assertReturn($result);
+    }
+}
+```
+
+### Invoking an Action
+
+Invoke an Action as you would a function:
+
+```php
+$action = new GetUserAction();
+$result = $action(1);  // or $action->__invoke(1)
+```
+
+## Advanced Usage
+
+### Parameter Validation Methods
+
+Define validation rules using dedicated methods for more control and flexibility. This is especially useful when validation rules cannot be expressed as attribute attributes (literal values only).
+
+#### Using `acceptParameters()`
+
+Define input validation rules centrally:
+
+```php
+use Chevere\Action\Action;
+use Chevere\Parameter\Interfaces\ParametersInterface;
+use function Chevere\Parameter\parameters;
+use function Chevere\Parameter\string;
+use function Chevere\Parameter\int;
+
+class CreatePostAction extends Action
+{
+    public function __invoke(
+        string $title,
+        string $content,
+        int $authorId
+    ): array {
+        $this->assertArguments($title, $content, $authorId);
+        return ['id' => 1];
+    }
+
+    public static function acceptParameters(): ParametersInterface
+    {
+        return parameters(
+            title: string(minLength: 5, maxLength: 200),
+            content: string(minLength: 10),
+            authorId: int(min: 1),
         );
     }
 }
 ```
 
-The code above demonstrates how to create an Action class with input validation and output assertion. The `$value` argument must match the regular expression `/^ok/` and the return value must be an integer between 0 and 100. See Advanced use for alternative approaches.
+#### Using `acceptReturn()`
 
-## Using Action
-
-### Invoking Actions
-
-Invoke action's `__invoke()` method, same as a function. Action internal runtime will assert arguments and return against your expectations.
-
-💡 You can try by running `php demo/demo.php`
-
-```php
-$action = new MyAction();
-$result = $action->__invoke('ok muy bueno');
-$result = $action('ok muy bueno'); // same thing
-```
-
-### ActionName
-
-Actions can use the `public function setUp(...)` method to define logic which must be executed before the Action is invoked.
-
-For example, an Action may define to require setup location and code arguments:
+Define output validation rules:
 
 ```php
 use Chevere\Action\Action;
+use Chevere\Parameter\Interfaces\ParameterInterface;
+use function Chevere\Parameter\arrayOf;
+use function Chevere\Parameter\int;
 
-class Redirect extends Action
+class GetUserAction extends Action
 {
-    public function setUp(string $location, int $code): void
+    public function __invoke(int $userId): array
     {
-        $this->location = $location;
-        $this->code = $code;
+        $this->assertArguments($userId);
+        $result = ['id' => $userId, 'name' => 'John'];
+        return $this->assertReturn($result);
+    }
+
+    public static function acceptReturn(): ParameterInterface
+    {
+        return arrayOf(
+            int(key: 'id', min: 1),
+            string(key: 'name', minLength: 1),
+        );
     }
 }
 ```
 
-With `ActionName` you can store the Action name and its `setUp()` arguments:
+### Assertion Methods
+
+Control exactly when and how validations occur:
+
+#### `assertArguments()`
+
+Validate input against defined rules. Can be called with explicit arguments or automatically from the caller context:
 
 ```php
-use Chevere\Action\ActionName;
-
-$actionName = new ActionName(Redirect::class, $location, $code);
-```
-
-Which you can later use directly:
-
-```php
-$className = (string) $actionName;
-$action = new $className();
-$action->setUp(...$actionName->arguments());
-```
-
-Or craft your own `ActionName` accessors directly on your Actions:
-
-```php
-use Chevere\Action\Action;
-use Chevere\Action\ActionName;
-use Chevere\Action\Interfaces\ActionNameInterface;
-
-class Redirect extends Action
-{
-    // setUp(...)
-
-    public static function with(string $location, int $code): ActionNameInterface
-    {
-        return new ActionName(static::class, ...get_defined_vars());
-    }
-}
-```
-
-Which you can later use like this:
-
-```php
-$redirect = Redirect::with('some/location', 302);
-```
-
-## Advanced use
-
-This library offers flexible validation strategies to match your application's architecture. While embedding assertions within the `__invoke()` method provides maximum portability, you can also implement centralized validation logic or delegate validation responsibilities to callers. The following methods enable fine-grained control over where and how validations are performed across.
-
-### Accept parameters method
-
-Use method `acceptParameters()` to define parameter assertion rules. In this context you can use and remix any [Parameter function](https://chevere.org/packages/parameter.html#reference).
-
-```php
-use Chevere\Parameter\Interfaces\ParametersAccessInterface;
-use Chevere\Parameter\Interfaces\ParametersInterface;
-use function Chevere\Parameter\parameters;
-use function Chevere\Parameter\string;
-
-public function __invoke(
-    string $foo
-): int {
-    // ...
-}
-
-public static function acceptParameters(): ParametersInterface|ParametersAccessInterface
-{
-    return parameters(
-        foo: string('/^ok/'),
-    );
-}
-```
-
-**Note:** The attribute notation on `__invoke()` parameters is ignored if `acceptParameters()` does not return `MixedParameterInterface`.
-
-### Accept return method
-
-Use method `acceptReturn()` to define return value assertion rules. In this context you can use and remix any [Parameter function](https://chevere.org/packages/parameter.html#reference).
-
-**Note:** The `#[ReturnAttr]` attribute on the `__invoke()` return value is ignored if `acceptReturn()` does not return `MixedParameterInterface`.
-
-```php
-use Chevere\Action\Interfaces\ParameterInterface;
-use function Chevere\Parameter\string;
-
-public static function acceptReturn(): ParameterInterface
-{
-    return string();
-}
-```
-
-### Assert arguments method
-
-Use method `assertArguments()` to assert Action's `__invoke()` arguments against your expectations. When `assertArguments()` method is called without arguments, it will magic take the arguments from the function caller context.
-
-```php
-// magic
-$action->assertArguments();
-// explicit
-$action->assertArguments(...$args);
-// explicit, all defined vars
-$action->assertArguments(...get_defined_vars());
-```
-
-All the following sample definitions are equivalent in results and will evaluate the same arguments.
-
-```php
-public function __invoke($foo, $bar): void {
+// Automatic extraction from caller context
+public function __invoke($foo, $bar) {
     $this->assertArguments();
 }
 
-public function __invoke($foo, $bar): void {
+// Explicit arguments
+public function __invoke($foo, $bar) {
     $this->assertArguments($foo, $bar);
 }
 
-public function __invoke($foo, $bar): void {
+// Using get_defined_vars()
+public function __invoke($foo, $bar) {
     $this->assertArguments(...get_defined_vars());
 }
 ```
 
-### Assert return method
+#### `assertReturn()`
 
-Use method `assertReturn()` to assert Action's `__invoke()` return value against your expectations.
+Validate the return value against defined rules:
 
 ```php
-$action->assertReturn($result);
+public function __invoke(int $id): array
+{
+    $result = $this->fetchUser($id);
+    return $this->assertReturn($result);
+}
 ```
 
-### Assert method
+#### `assert()`
 
-Use method `assert()` to assert runtime rules coherence.
+Validate runtime rule coherence. Useful for checking internal state:
 
 ```php
-$action->assert();
+public function __invoke(): void
+{
+    $this->setupDependencies();
+    $this->assert();
+}
 ```
 
-### Reflection method
+### Advanced Rules
 
-Use method `reflection()` to access ReflectionAction instance. It enables to read Action's parameters and return assertion rules.
+#### Static Rules with `acceptRulesStatic()`
 
-```php
-$action::reflection()->parameters();
-$action::reflection()->return();
-```
-
-### Accept rules static method
-
-This method is called before `assert*()` calls.
-
-Use method `acceptRulesStatic()` to define additional static assertion rules to constrain your custom Action design. The purpose of this method is demonstrated at the [Controller class](src/Controller.php) to constrain the design by restricting `__invoke()` parameters to type string.
-
-This is very flexible and allows you to enforce advanced design rules at the class level and for very specific cases, for example to forbid certain parameter names:
+Enforce design rules at class definition time. Called before any assertions:
 
 ```php
-public static function acceptRulesStatic(): void {
-    if(static::reflection()->parameters()->has('lucho')) {
-        throw new LogicException('Parameter $lucho is forbidden');
+public static function acceptRulesStatic(): void
+{
+    $reflection = static::reflection();
+
+    // Enforce that parameter $password is never used
+    if ($reflection->parameters()->has('password')) {
+        throw new LogicException('Password parameter not allowed');
     }
 }
 ```
 
-### Accept rules runtime method
+#### Runtime Rules with `acceptRulesRuntime()`
 
-This method is called before `assert*()` calls.
-
-Use method `acceptRulesRuntime()` to define additional runtime assertion rules. The purpose of this method is demonstrated at the [HTTP Controller](https://github.com/chevere/http) to constrain the design by ensuring the existence of HTTP participants.
+Enforce rules based on instance state. Called before assertions at invocation time:
 
 ```php
+private array $config = [];
+
 public function acceptRulesRuntime(): void
 {
-    if (! isset($this->_query, $this->_bodyParsed, $this->_files)) {
-        throw new LogicException('Server request not set.');
+    if (empty($this->config)) {
+        throw new RuntimeException('Configuration required before invocation');
     }
 }
 ```
 
-## Controller
+### Action Setup Method
 
-The Controller is a special type of Action in charge of handling command-like instructions. Its `__invoke()` method only takes parameters of type `string|int|float`.
-
-### Defining a Controller
-
-A Controller implements the `ControllerInterface`. You can extend `Controller` to quick create a compliant Controller:
+Use `setUp()` to initialize an Action before invocation:
 
 ```php
-use Chevere\Controller\Controller;
-
-class SomeController extends Controller
+class SendEmailAction extends Action
 {
+    private SmtpConfig $smtpConfig;
+
+    public function setUp(SmtpConfig $config): void
+    {
+        $this->smtpConfig = $config;
+    }
+
+    public function __invoke(string $email): bool
+    {
+        $this->acceptRulesRuntime();
+        return mail($email, 'Hello', 'World');
+    }
+
+    public function acceptRulesRuntime(): void
+    {
+        if (!isset($this->smtpConfig)) {
+            throw new RuntimeException('SMTP configuration required');
+        }
+    }
+}
+
+// Usage
+$action = new SendEmailAction();
+$action->setUp($smtpConfig);
+$result = $action('user@example.com');
+```
+
+### ActionName
+
+Store and manage Action instances with their setup arguments using `ActionName`:
+
+```php
+use Chevere\Action\ActionName;
+
+$actionName = new ActionName(
+    SendEmailAction::class,
+    $smtpConfig
+);
+
+// Later: reconstruct and invoke
+$className = (string) $actionName;
+$action = new $className();
+$action->setUp(...$actionName->arguments());
+$action('user@example.com');
+```
+
+Or use a factory method on your Action:
+
+```php
+class SendEmailAction extends Action
+{
+    public static function configure(SmtpConfig $config): ActionNameInterface
+    {
+        return new ActionName(static::class, $config);
+    }
+}
+
+// Usage
+$configured = SendEmailAction::configure($smtpConfig);
+$action = new (string)$configured();
+$action->setUp(...$configured->arguments());
+```
+
+### Reflection Access
+
+Access Action metadata using `reflection()`:
+
+```php
+$action = new MyAction();
+
+// Get parameter definitions
+$parameters = $action::reflection()->parameters();
+
+// Get return definition
+$return = $action::reflection()->return();
+
+// Check if parameter exists
+if ($parameters->has('userId')) {
     // ...
+}
+
+// Iterate parameters
+foreach ($parameters as $name => $parameter) {
+    echo $name . ': ' . get_class($parameter);
 }
 ```
 
-### Invoke parameters
+The `Controller` is a specialized Action for handling command-like instructions. Unlike standard Actions that accept any type of parameters, Controllers restrict parameters to scalar types: `string`, `int`, and `float`.
 
-Parameters are defined in the `__invoke()` method but it just takes type `string`, `int`, or `float`.
+Controllers are ideal for handling user input from APIs, CLI commands, or form submissions where all arguments arrive as scalar values.
+
+### Creating a Controller
+
+Extend the `Controller` class to create a compliant Controller:
 
 ```php
-public function __invoke(
-    string $pepito,
-    int $paysTwice
-): array
+use Chevere\Action\Controller;
+use Chevere\Parameter\Interfaces\ParametersInterface;
+use function Chevere\Parameter\parameters;
+use function Chevere\Parameter\string;
+use function Chevere\Parameter\int;
+
+class CreatePostController extends Controller
 {
-    // ...
+    public function __invoke(
+        string $title,
+        string $content,
+        int $authorId
+    ): array {
+        $this->assertArguments($title, $content, $authorId);
+        return [
+            'id' => 1,
+            'title' => $title,
+            'author' => $authorId
+        ];
+    }
+
+    public static function acceptParameters(): ParametersInterface
+    {
+        return parameters(
+            title: string(minLength: 5, maxLength: 200),
+            content: string(minLength: 10),
+            authorId: int(min: 1),
+        );
+    }
 }
 ```
+
+### Usage Example
+
+```php
+$controller = new CreatePostController();
+$result = $controller(
+    title: 'My First Post',
+    content: 'This is great content.',
+    authorId: 42
+);
+// Returns: ['id' => 1, 'title' => 'My First Post', 'author' => 42]
+```
+
+**Note:** Controllers enforce type validation at the class level. Any parameter with a type other than `string|int|float` will trigger a validation error during class initialization.
 
 ## Documentation
 
-Documentation is available at [chevere.org](https://chevere.org/packages/action).
+Documentation is available at [chevere.org/packages/action](https://chevere.org/packages/action).
 
 ## License
 
