@@ -79,7 +79,7 @@ use Chevere\Parameter\Attributes\_return;
 class GetUserAction extends Action
 {
     #[_return(
-        new PArray(
+        new _arrayp(
             userId: new _int(min: 1),
             name: new _string(),
         )
