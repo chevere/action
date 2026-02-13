@@ -1,6 +1,6 @@
 {
     "name": "chevere/action",
-    "description": "Action Design Pattern implementation for PHP",
+    "description": "Type-safe invokable objects with attribute-based parameter and return value validation",
     "homepage": "https://chevere.org",
     "type": "library",
     "license": "Apache-2.0",
