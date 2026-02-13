@@ -13,19 +13,19 @@ declare(strict_types=1);
 
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\Traits\ActionTrait;
-use Chevere\Parameter\Attributes\IntAttr;
-use Chevere\Parameter\Attributes\ReturnAttr;
-use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Parameter\Attributes\_int;
+use Chevere\Parameter\Attributes\_return;
+use Chevere\Parameter\Attributes\_string;
 
 class MyAction implements ActionInterface
 {
     use ActionTrait;
 
-    #[ReturnAttr(
-        new IntAttr(min: 0, max: 100)
+    #[_return(
+        new _int(min: 0, max: 100)
     )]
     public function __invoke(
-        #[StringAttr('/^ok/')]
+        #[_string('/^ok/')]
         string $value
     ): int {
         return mb_strlen($value) * 5;

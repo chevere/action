@@ -71,21 +71,21 @@ Enhance Actions with input and output validation using attributes from the Param
 
 ```php
 use Chevere\Action\Action;
-use Chevere\Parameter\Attributes\ArrayAttr;
-use Chevere\Parameter\Attributes\IntAttr;
-use Chevere\Parameter\Attributes\StringAttr;
-use Chevere\Parameter\Attributes\ReturnAttr;
+use Chevere\Parameter\Attributes\_arrayp;
+use Chevere\Parameter\Attributes\_int;
+use Chevere\Parameter\Attributes\_string;
+use Chevere\Parameter\Attributes\_return;
 
 class GetUserAction extends Action
 {
-    #[ReturnAttr(
-        new ArrayAttr(
-            userId: new IntAttr(min: 1),
-            name: new StringAttr(),
+    #[_return(
+        new PArray(
+            userId: new _int(min: 1),
+            name: new _string(),
         )
     )]
     public function __invoke(
-        #[IntAttr(min: 1)]
+        #[_int(min: 1)]
         int $userId
     ): array {
         $this->assertArguments($userId);

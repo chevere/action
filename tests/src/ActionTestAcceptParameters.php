@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
-use Chevere\Parameter\Attributes\IntAttr;
-use Chevere\Parameter\Attributes\ReturnAttr;
-use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Parameter\Attributes\_int;
+use Chevere\Parameter\Attributes\_return;
+use Chevere\Parameter\Attributes\_string;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use function Chevere\Parameter\parameters;
 use function Chevere\Parameter\string;
@@ -26,12 +26,12 @@ use function Chevere\Parameter\string;
  */
 final class ActionTestAcceptParameters extends Action
 {
-    #[ReturnAttr(
-        new IntAttr(min: 1)
+    #[_return(
+        new _int(min: 1)
     )
     ]
     public function __invoke(
-        #[StringAttr('/^ko$/')]
+        #[_string('/^ko$/')]
         string $foo
     ): int {
         $this->assertArguments($foo);

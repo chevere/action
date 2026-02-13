@@ -15,7 +15,7 @@ namespace Chevere\Action;
 
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
-use Chevere\Parameter\Attributes\ReturnAttr;
+use Chevere\Parameter\Attributes\_return;
 use Chevere\Parameter\Interfaces\MixedParameterInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
@@ -77,10 +77,10 @@ final class ReflectionAction implements ReflectionActionInterface
             default => reflectionToParameters($this->method),
         };
         $acceptReturn = $action::acceptReturn();
-        $returnAttributes = $this->method->getAttributes(ReturnAttr::class);
+        $_returnAttributes = $this->method->getAttributes(_return::class);
         $this->return = match (true) {
             ! $acceptReturn instanceof MixedParameterInterface => $acceptReturn,
-            $returnAttributes === [] => $acceptReturn,
+            $_returnAttributes === [] => $acceptReturn,
             default => reflectionToReturn($this->method),
         };
         if (! $this->method->hasReturnType()) {

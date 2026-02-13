@@ -14,22 +14,22 @@ declare(strict_types=1);
 namespace Chevere\Tests\src;
 
 use Chevere\Action\Action;
-use Chevere\Parameter\Attributes\BoolAttr;
-use Chevere\Parameter\Attributes\ReturnAttr;
-use Chevere\Parameter\Attributes\StringAttr;
+use Chevere\Parameter\Attributes\_bool;
+use Chevere\Parameter\Attributes\_return;
+use Chevere\Parameter\Attributes\_string;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use function Chevere\Parameter\int;
 
 /**
- * Method `acceptReturn()` has higher priority than ReturnAttr, which is ignored.
+ * Method `acceptReturn()` has higher priority than _return, which is ignored.
  */
 final class ActionTestAttributes extends Action
 {
-    #[ReturnAttr(
-        new BoolAttr()
+    #[_return(
+        new _bool()
     )]
     public function __invoke(
-        #[StringAttr('/^ab$/')]
+        #[_string('/^ab$/')]
         string $value
     ): int {
         $this->assertArguments($value);
