@@ -17,8 +17,11 @@ use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\ReflectionAction;
 use Chevere\Tests\src\ActionTestMissingInvoke;
 use Chevere\Tests\src\ActionTestNullReturnType;
+use Chevere\Tests\src\ActionTestUnionReturnMismatch;
+use Chevere\Tests\src\ActionTestUnionReturnType;
 use LogicException;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 final class ReflectionActionTest extends TestCase
 {
@@ -58,5 +61,22 @@ final class ReflectionActionTest extends TestCase
         $action = ActionTestNullReturnType::class;
         $reflection = new ReflectionAction($action);
         $this->assertSame('null', $reflection->return()->type()->typeHinting());
+    }
+
+    public function testUnionReturnTypeMismatch(): void
+    {
+        $action = ActionTestUnionReturnMismatch::class;
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage(
+            'Action `__invoke` method must declare `int` return type'
+        );
+        new ReflectionAction($action);
+    }
+
+    public function testUnionReturnTypeMatch(): void
+    {
+        $action = ActionTestUnionReturnType::class;
+        $reflection = new ReflectionAction($action);
+        $this->assertInstanceOf(ReflectionAction::class, $reflection);
     }
 }
