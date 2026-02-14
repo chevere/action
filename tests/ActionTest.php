@@ -22,6 +22,7 @@ use Chevere\Tests\src\ActionTestActionAcceptRulesStatic;
 use Chevere\Tests\src\ActionTestAssertArgumentsDefinedVars;
 use Chevere\Tests\src\ActionTestAssertArgumentsExplicit;
 use Chevere\Tests\src\ActionTestAssertArgumentsImplicit;
+use Chevere\Tests\src\ActionTestAssertReflectionCache;
 use Chevere\Tests\src\ActionTestAssertRuntimeAction;
 use Chevere\Tests\src\ActionTestAttributes;
 use Chevere\Tests\src\ActionTestController;
@@ -415,5 +416,22 @@ final class ActionTest extends TestCase
             PLAIN
         );
         $action->__invoke('ko');
+    }
+
+    public function testAssertCallsReflection(): void
+    {
+        $action = new ActionTestAcceptParameters();
+        $this->expectNotToPerformAssertions();
+        $action->assert();
+    }
+
+    public function testAssertTriggersReflectionCache(): void
+    {
+        $action = new ActionTestAssertReflectionCache();
+        $action->assert();
+        $reflectionMethod = new ReflectionMethod($action, 'reflection');
+        $this->assertTrue(
+            isset($reflectionMethod->getStaticVariables()['cache'][$action::class])
+        );
     }
 }
