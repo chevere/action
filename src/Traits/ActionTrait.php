@@ -135,7 +135,6 @@ trait ActionTrait
 
     /**
      * Return an array with the passed function arguments from the backtrace position.
-     * This is negligible (~0-2.5%) slower than using direct argument access.
      *
      * @return array<string, mixed>
      *
