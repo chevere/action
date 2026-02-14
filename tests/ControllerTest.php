@@ -15,6 +15,7 @@ namespace Chevere\Tests;
 
 use Chevere\Action\Exceptions\ActionException;
 use Chevere\Tests\src\ControllerTestSupportedTypes;
+use Chevere\Tests\src\ControllerTestUnionUnsupportedTypes;
 use Chevere\Tests\src\ControllerTestUnsupportedTypes;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -64,5 +65,17 @@ final class ControllerTest extends TestCase
             stdClass: new stdClass(),
             bool: true
         );
+    }
+
+    public function testInvalidUnionParameters(): void
+    {
+        $this->expectException(ActionException::class);
+        $this->expectExceptionMessage(
+            <<<PLAIN
+            InvalidArgumentException → Parameter(s) `param` must be compatible with type **string|int|float** at `Chevere\\Tests\\src\\ControllerTestUnionUnsupportedTypes->__invoke()` method
+            PLAIN
+        );
+        $controller = new ControllerTestUnionUnsupportedTypes();
+        $controller->assertArguments(param: 'any');
     }
 }
