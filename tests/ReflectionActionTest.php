@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\ReflectionAction;
 use Chevere\Tests\src\ActionTestMissingInvoke;
+use Chevere\Tests\src\ActionTestNullReturnType;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 
@@ -50,5 +51,12 @@ final class ReflectionActionTest extends TestCase
             "Action doesn't define a `__invoke` method"
         );
         new ReflectionAction($action);
+    }
+
+    public function testVoidReturnType(): void
+    {
+        $action = ActionTestNullReturnType::class;
+        $reflection = new ReflectionAction($action);
+        $this->assertSame('null', $reflection->return()->type()->typeHinting());
     }
 }
