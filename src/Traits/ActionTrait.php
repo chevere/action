@@ -144,7 +144,7 @@ trait ActionTrait
     private function takeArguments(int $pos): array
     {
         $tracePos = 2 + $pos;
-        $trace = debug_backtrace(0, $tracePos);
+        $trace = debug_backtrace(0, $tracePos); // @infection-ignore-line
         $caller = $trace[$tracePos - 1];
         $args = $caller['args'] ?? [];
         $parameters = static::reflection()->parameters();

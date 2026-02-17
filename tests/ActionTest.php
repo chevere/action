@@ -383,13 +383,13 @@ final class ActionTest extends TestCase
         );
         $action->__invoke(0);
         $this->assertCount(0, $action);
-        $action->assertReturn(1);
+        $action->assertReturn(null);
         $this->assertTrue(
             (new ReflectionMethod($action, 'assertReturn'))
                 ->getStaticVariables()['cache'][$action::class] ?? false
         );
         $this->assertCount($first, $action);
-        $action->assertReturn(2);
+        $action->assertReturn(null);
         $this->assertCount($second, $action);
         $action->__invoke(0);
     }

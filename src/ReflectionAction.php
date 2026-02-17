@@ -15,11 +15,10 @@ namespace Chevere\Action;
 
 use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
-use Chevere\Parameter\Attributes\_return;
-use Chevere\Parameter\Interfaces\MixedParameterInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Parameter\Interfaces\UnionParameterInterface;
+use Chevere\Parameter\MixedParameter;
 use LogicException;
 use ReflectionIntersectionType;
 use ReflectionMethod;
@@ -77,10 +76,8 @@ final class ReflectionAction implements ReflectionActionInterface
             default => reflectionToParameters($this->method),
         };
         $acceptReturn = $action::acceptReturn();
-        $_returnAttributes = $this->method->getAttributes(_return::class);
         $this->return = match (true) {
-            ! $acceptReturn instanceof MixedParameterInterface => $acceptReturn,
-            $_returnAttributes === [] => $acceptReturn,
+            ! ($acceptReturn instanceof MixedParameter) => $acceptReturn,
             default => reflectionToReturn($this->method),
         };
         if (! $this->method->hasReturnType()) {
