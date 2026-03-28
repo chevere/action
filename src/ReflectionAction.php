@@ -13,26 +13,162 @@ declare(strict_types=1);
 
 namespace Chevere\Action;
 
+use Chevere\Action\Interfaces\ActionInterface;
 use Chevere\Action\Interfaces\ReflectionActionInterface;
-use Chevere\Action\Traits\ReflectionActionTrait;
+use Chevere\DataStructure\Interfaces\VectorInterface;
+use Chevere\DataStructure\Vector;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
-use ReflectionFunction;
+use Chevere\Parameter\Interfaces\UnionParameterInterface;
+use Chevere\Parameter\MixedParameter;
+use LogicException;
+use ReflectionIntersectionType;
 use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionUnionType;
+use TypeError;
+use function Chevere\Message\message;
+use function Chevere\Parameter\getParameters;
 use function Chevere\Parameter\reflectionToParameters;
 use function Chevere\Parameter\reflectionToReturn;
 
 final class ReflectionAction implements ReflectionActionInterface
 {
-    use ReflectionActionTrait;
+    private ReflectionMethod $method;
 
-    public function reflectionToParameters(ReflectionFunction|ReflectionMethod $reflection): ParametersInterface
-    {
-        return reflectionToParameters($reflection);
+    private ParametersInterface $parameters;
+
+    private ParameterInterface $return;
+
+    private VectorInterface $violations;
+
+    /**
+     * @param class-string<ActionInterface> $action
+     */
+    public function __construct(
+        string $action,
+        bool $failFast = false,
+    ) {
+        $this->violations = new Vector();
+        if (! class_exists($action)) {
+            throw new LogicException(
+                (string) message("Action doesn't exists")
+            );
+        }
+        $interfaces = class_implements($action) ?: [];
+        if (! in_array(ActionInterface::class, $interfaces, true)) {
+            throw new LogicException(
+                (string) message(
+                    "Action doesn't implement `%interface%`",
+                    interface: ActionInterface::class,
+                )
+            );
+        }
+        /**
+         * @var class-string<ActionInterface> $action
+         * @phpstan-ignore-next-line
+         */
+        if (! method_exists($action, '__invoke')) {
+            throw new LogicException(
+                (string) message(
+                    "Action doesn't define a `__invoke` method",
+                )
+            );
+        }
+        $this->method = new ReflectionMethod($action, '__invoke');
+        $acceptParameters = getParameters($action::acceptParameters());
+        $violations = $failFast ? null : [];
+        $this->parameters = match (true) {
+            count($acceptParameters) !== 0 => $acceptParameters,
+            default => reflectionToParameters($this->method, $violations),
+        };
+        if ((bool) $violations) {
+            $this->violations = $this->violations->withPush(...$violations);
+        }
+        $acceptReturn = $action::acceptReturn();
+        $this->return = match (true) {
+            ! ($acceptReturn instanceof MixedParameter) => $acceptReturn,
+            default => reflectionToReturn($this->method),
+        };
+        if (! $this->method->hasReturnType()) {
+            if ($this->return->type()->typeHinting() === 'null') {
+                return;
+            }
+
+            throw new TypeError(
+                (string) message(
+                    'Action `__invoke` method must declare `%type%` return type',
+                    type: $this->return->type()->typeHinting(),
+                )
+            );
+        }
+        $this->assertReturn();
     }
 
-    public function reflectionToReturn(ReflectionFunction|ReflectionMethod $reflection): ParameterInterface
+    public function method(): ReflectionMethod
     {
-        return reflectionToReturn($reflection);
+        return $this->method;
+    }
+
+    public function parameters(): ParametersInterface
+    {
+        return $this->parameters;
+    }
+
+    public function return(): ParameterInterface
+    {
+        return $this->return;
+    }
+
+    public function violations(): VectorInterface
+    {
+        return $this->violations;
+    }
+
+    private function assertReturn(): void
+    {
+        $expect = [];
+        if ($this->return instanceof UnionParameterInterface) {
+            foreach ($this->return->parameters() as $parameter) {
+                $expect[] = $parameter->type()->typeHinting();
+            }
+        } else {
+            $expect[] = $this->return->type()->typeHinting();
+        }
+        if (in_array('mixed', $expect, true)) {
+            return;
+        }
+        if (in_array('iterable', $expect, true)) {
+            $expect[] = 'array';
+            $expect[] = 'Traversable';
+        }
+        /** @var ReflectionNamedType|ReflectionUnionType $type */
+        $type = $this->method->getReturnType();
+        if ($type instanceof ReflectionUnionType) {
+            $typeName = [];
+            foreach ($type->getTypes() as $unionType) {
+                if ($unionType instanceof ReflectionIntersectionType) {
+                    continue;
+                }
+                $typeName[] = $unionType->getName();
+            }
+        } else {
+            $typeName = $type->getName();
+        }
+        $return = match ($typeName) {
+            'void' => 'null',
+            default => $typeName,
+        };
+        if (is_array($return) && $expect === $return) {
+            return;
+        }
+        if (! in_array($return, $expect, true)) {
+            throw new TypeError(
+                (string) message(
+                    'Action `__invoke` method must declare `%type%` return type',
+                    type: implode('|', $expect),
+                )
+            );
+        }
     }
 }

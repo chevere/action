@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Action\Interfaces;
 
+use Chevere\DataStructure\Interfaces\VectorInterface;
 use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use ReflectionMethod;
@@ -24,4 +25,6 @@ interface ReflectionActionInterface
     public function parameters(): ParametersInterface;
 
     public function return(): ParameterInterface;
+
+    public function violations(): VectorInterface;
 }
