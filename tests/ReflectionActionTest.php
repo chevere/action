@@ -79,4 +79,60 @@ final class ReflectionActionTest extends TestCase
         $reflection = new ReflectionAction($action);
         $this->assertInstanceOf(ReflectionAction::class, $reflection);
     }
+
+    /**
+     * @dataProvider dataProviderViolations
+     */
+    public function testViolations(array $violations, string $action): void
+    {
+        $reflection = new ReflectionAction($action, failFast: false);
+        $this->assertSame(
+            $violations,
+            $reflection->violations()->toArray()
+        );
+    }
+
+    public static function dataProviderViolations(): array
+    {
+        $interface = ActionInterface::class;
+
+        return [
+            'action not exists' => [
+                [
+                    [
+                        'concern' => 'class',
+                        'message' => "Action doesn't exists",
+                    ],
+                ],
+                'wea',
+            ],
+            'action not implements interface' => [
+                [
+                    [
+                        'concern' => 'interface',
+                        'message' => "Action doesn't implement `{$interface}`",
+                    ],
+                ],
+                __CLASS__,
+            ],
+            'no invoke method' => [
+                [
+                    [
+                        'concern' => '__invoke',
+                        'message' => "Action doesn't define a `__invoke` method",
+                    ],
+                ],
+                ActionTestMissingInvoke::class,
+            ],
+            'union return type mismatch' => [
+                [
+                    [
+                        'concern' => '__invoke',
+                        'message' => 'Action `__invoke` method must declare `int` return type',
+                    ],
+                ],
+                ActionTestUnionReturnMismatch::class,
+            ],
+        ];
+    }
 }
