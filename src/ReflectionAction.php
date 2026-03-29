@@ -26,6 +26,7 @@ use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionUnionType;
+use Throwable;
 use TypeError;
 use function Chevere\Message\message;
 use function Chevere\Parameter\getParameters;
@@ -47,33 +48,50 @@ final class ReflectionAction implements ReflectionActionInterface
      */
     public function __construct(
         string $action,
-        bool $failFast = false,
+        private bool $failFast = true,
     ) {
         $this->violations = new Vector();
-        if (! class_exists($action)) {
-            throw new LogicException(
-                (string) message("Action doesn't exists")
+
+        try {
+            if (! class_exists($action)) {
+                $concern = 'class';
+
+                throw new LogicException((string) message("Action doesn't exists"));
+            }
+            $interfaces = class_implements($action) ?: [];
+            if (! in_array(ActionInterface::class, $interfaces, true)) {
+                $concern = 'interface';
+
+                throw new LogicException(
+                    (string) message(
+                        "Action doesn't implement `%interface%`",
+                        interface: ActionInterface::class,
+                    )
+                );
+            }
+            /**
+             * @var class-string<ActionInterface> $action
+             * @phpstan-ignore-next-line
+             */
+            if (! method_exists($action, '__invoke')) {
+                $concern = '__invoke';
+
+                throw new LogicException(
+                    (string) message("Action doesn't define a `__invoke` method")
+                );
+            }
+        } catch (Throwable $e) {
+            if ($this->failFast) {
+                throw $e;
+            }
+            $this->violations = $this->violations->withPush(
+                [
+                    'concern' => $concern ?? 'action',
+                    'message' => $e->getMessage(),
+                ]
             );
-        }
-        $interfaces = class_implements($action) ?: [];
-        if (! in_array(ActionInterface::class, $interfaces, true)) {
-            throw new LogicException(
-                (string) message(
-                    "Action doesn't implement `%interface%`",
-                    interface: ActionInterface::class,
-                )
-            );
-        }
-        /**
-         * @var class-string<ActionInterface> $action
-         * @phpstan-ignore-next-line
-         */
-        if (! method_exists($action, '__invoke')) {
-            throw new LogicException(
-                (string) message(
-                    "Action doesn't define a `__invoke` method",
-                )
-            );
+
+            return;
         }
         $this->method = new ReflectionMethod($action, '__invoke');
         $acceptParameters = getParameters($action::acceptParameters());
@@ -90,19 +108,32 @@ final class ReflectionAction implements ReflectionActionInterface
             ! ($acceptReturn instanceof MixedParameter) => $acceptReturn,
             default => reflectionToReturn($this->method),
         };
-        if (! $this->method->hasReturnType()) {
-            if ($this->return->type()->typeHinting() === 'null') {
-                return;
-            }
 
-            throw new TypeError(
-                (string) message(
-                    'Action `__invoke` method must declare `%type%` return type',
-                    type: $this->return->type()->typeHinting(),
-                )
+        try {
+            if (! $this->method->hasReturnType()) {
+                if ($this->return->type()->typeHinting() === 'null') {
+                    return;
+                }
+
+                throw new TypeError(
+                    (string) message(
+                        'Action `__invoke` method must declare `%type%` return type',
+                        type: $this->return->type()->typeHinting(),
+                    )
+                );
+            }
+            $this->assertReturn();
+        } catch (Throwable $e) {
+            if ($this->failFast) {
+                throw $e;
+            }
+            $this->violations = $this->violations->withPush(
+                [
+                    'concern' => '__invoke',
+                    'message' => $e->getMessage(),
+                ]
             );
         }
-        $this->assertReturn();
     }
 
     public function method(): ReflectionMethod
