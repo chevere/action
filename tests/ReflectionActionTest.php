@@ -80,6 +80,12 @@ final class ReflectionActionTest extends TestCase
         $this->assertInstanceOf(ReflectionAction::class, $reflection);
     }
 
+    public function testConstruct(): void
+    {
+        $reflection = new ReflectionAction(ActionTestNullReturnType::class);
+        $this->assertCount(0, $reflection->violations());
+    }
+
     /**
      * @dataProvider dataProviderViolations
      */
