@@ -431,7 +431,7 @@ final class ActionTest extends TestCase
         $action->assert();
         $reflectionMethod = new ReflectionMethod($action, 'reflection');
         $this->assertTrue(
-            isset($reflectionMethod->getStaticVariables()['cache'][$action::class])
+            isset($reflectionMethod->getStaticVariables()['cache'][1][$action::class])
         );
     }
 }

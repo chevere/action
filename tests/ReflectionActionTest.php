@@ -91,7 +91,7 @@ final class ReflectionActionTest extends TestCase
      */
     public function testViolations(array $violations, string $action): void
     {
-        $reflection = new ReflectionAction($action, failFast: false);
+        $reflection = new ReflectionAction($action, isFailFast: false);
         $this->assertSame(
             $violations,
             $reflection->violations()->toArray()

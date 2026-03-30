@@ -48,7 +48,7 @@ final class ReflectionAction implements ReflectionActionInterface
      */
     public function __construct(
         string $action,
-        private bool $failFast = true,
+        bool $isFailFast = true,
     ) {
         $this->violations = new Vector();
 
@@ -81,7 +81,7 @@ final class ReflectionAction implements ReflectionActionInterface
                 );
             }
         } catch (Throwable $e) {
-            if ($this->failFast) {
+            if ($isFailFast) {
                 throw $e;
             }
             $this->violations = $this->violations->withPush(
@@ -95,7 +95,7 @@ final class ReflectionAction implements ReflectionActionInterface
         }
         $this->method = new ReflectionMethod($action, '__invoke');
         $acceptParameters = getParameters($action::acceptParameters());
-        $violations = $failFast ? null : [];
+        $violations = $isFailFast ? null : [];
         $this->parameters = match (true) {
             count($acceptParameters) !== 0 => $acceptParameters,
             default => reflectionToParameters($this->method, $violations),
@@ -124,7 +124,7 @@ final class ReflectionAction implements ReflectionActionInterface
             }
             $this->assertReturn();
         } catch (Throwable $e) {
-            if ($this->failFast) {
+            if ($isFailFast) {
                 throw $e;
             }
             $this->violations = $this->violations->withPush(

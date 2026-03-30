@@ -101,14 +101,14 @@ trait ActionTrait
         }
     }
 
-    final public static function reflection(): ReflectionActionInterface
+    final public static function reflection(bool $isFailFast = true): ReflectionActionInterface
     {
         static $cache = [];
-        if (! isset($cache[static::class])) {
-            $cache[static::class] = new ReflectionAction(static::class);
+        if (! isset($cache[$isFailFast][static::class])) {
+            $cache[$isFailFast][static::class] = new ReflectionAction(static::class, $isFailFast);
         }
 
-        return $cache[static::class];
+        return $cache[$isFailFast][static::class];
     }
 
     /**
