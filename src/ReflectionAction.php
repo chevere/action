@@ -30,6 +30,8 @@ use Throwable;
 use TypeError;
 use function Chevere\Message\message;
 use function Chevere\Parameter\getParameters;
+use function Chevere\Parameter\mixed;
+use function Chevere\Parameter\parameters;
 use function Chevere\Parameter\reflectionToParameters;
 use function Chevere\Parameter\reflectionToReturn;
 
@@ -50,7 +52,9 @@ final class ReflectionAction implements ReflectionActionInterface
         string $action,
         bool $isFailFast = true,
     ) {
+        $this->parameters = parameters();
         $this->violations = new Vector();
+        $this->return = mixed();
 
         try {
             if (! class_exists($action)) {
