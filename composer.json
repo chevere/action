@@ -14,7 +14,7 @@
     "require": {
         "php": "^8.1",
         "chevere/message": "^1.0.0",
-        "chevere/parameter": "^2.0.x-dev"
+        "chevere/parameter": "^2.0.5"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
