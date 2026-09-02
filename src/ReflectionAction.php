@@ -75,7 +75,6 @@ final class ReflectionAction implements ReflectionActionInterface
             }
             /**
              * @var class-string<ActionInterface> $action
-             * @phpstan-ignore-next-line
              */
             if (! method_exists($action, '__invoke')) {
                 $concern = '__invoke';
