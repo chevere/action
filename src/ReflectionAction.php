@@ -73,9 +73,6 @@ final class ReflectionAction implements ReflectionActionInterface
                     )
                 );
             }
-            /**
-             * @var class-string<ActionInterface>
-             */
             if (! method_exists($action, '__invoke')) {
                 $concern = '__invoke';
 
