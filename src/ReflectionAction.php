@@ -74,7 +74,7 @@ final class ReflectionAction implements ReflectionActionInterface
                 );
             }
             /**
-             * @var class-string<ActionInterface> $action
+             * @var class-string<ActionInterface>
              */
             if (! method_exists($action, '__invoke')) {
                 $concern = '__invoke';
@@ -121,7 +121,8 @@ final class ReflectionAction implements ReflectionActionInterface
                 throw new TypeError(
                     (string) message(
                         'Action `__invoke` method must declare `%type%` return type',
-                        type: $this->return->type()->typeHinting(),
+                        type: $this->return->type()
+                            ->typeHinting(),
                     )
                 );
             }
