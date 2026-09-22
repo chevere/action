@@ -17,7 +17,6 @@
         "chevere/parameter": "^2.0.5"
     },
     "require-dev": {
-        "chevere/var-dump": "^2.0",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^10.5",
         "symplify/easy-coding-standard": "^13.2"
