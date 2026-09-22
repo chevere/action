@@ -34,10 +34,12 @@ use Chevere\Tests\src\ActionTestNoReturnTypeError;
 use Chevere\Tests\src\ActionTestNullParameterNoReturn;
 use Chevere\Tests\src\ActionTestNullReturnType;
 use Chevere\Tests\src\ActionTestReturnExtraArguments;
+use Chevere\Tests\src\ActionTestReturnHook;
 use Chevere\Tests\src\ActionTestSensitiveParameter;
 use Chevere\Tests\src\ActionTestUnionReturnMissingType;
 use Chevere\Tests\src\ActionTestUnionReturnType;
 use Closure;
+use Countable;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
@@ -160,10 +162,12 @@ final class ActionTest extends TestCase
     public function testAttributeParameters(): void
     {
         $parameters = ActionTestAttributes::reflection()->parameters();
-        $parameter = $parameters->required('value')->string();
+        $parameter = $parameters->required('value')
+            ->string();
         $this->assertSame(
             '/^ab$/',
-            $parameter->regex()->__toString()
+            $parameter->regex()
+                ->__toString()
         );
     }
 
@@ -321,6 +325,7 @@ final class ActionTest extends TestCase
     }
 
     /**
+     * @param ActionInterface|Countable $action
      * @dataProvider dataProviderTestAssertRules
      */
     public function testAssertRulesAssertCache(
@@ -345,6 +350,7 @@ final class ActionTest extends TestCase
     }
 
     /**
+     * @param ActionInterface|Countable $action
      * @dataProvider dataProviderTestAssertRules
      */
     public function testAssertRulesAssertArgumentsCache(
@@ -370,6 +376,7 @@ final class ActionTest extends TestCase
     }
 
     /**
+     * @param ActionInterface|Countable $action
      * @dataProvider dataProviderTestAssertRules
      */
     public function testAssertRulesAssertReturnCache(
@@ -432,6 +439,25 @@ final class ActionTest extends TestCase
         $reflectionMethod = new ReflectionMethod($action, 'reflection');
         $this->assertTrue(
             isset($reflectionMethod->getStaticVariables()['cache'][1][$action::class])
+        );
+    }
+
+    public function testAcceptReturnHook(): void
+    {
+        $action = new ActionTestReturnHook(true);
+        $this->assertSame(
+            [
+                'foo' => 'test',
+                'bar' => 'test',
+            ],
+            $action->__invoke()
+        );
+        $action = new ActionTestReturnHook(false);
+        $this->assertSame(
+            [
+                'foo' => 'test',
+            ],
+            $action->__invoke()
         );
     }
 }

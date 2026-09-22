@@ -2,11 +2,11 @@
 
 ![Chevere](chevere.svg)
 
-[![Build](https://img.shields.io/github/actions/workflow/status/chevere/action/test.yml?branch=3.0&style=flat-square)](https://github.com/chevere/action/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/chevere/action/test.yml?branch=3.1&style=flat-square)](https://github.com/chevere/action/actions)
 ![Code size](https://img.shields.io/github/languages/code-size/chevere/action?style=flat-square)
 [![Apache-2.0](https://img.shields.io/github/license/chevere/action?style=flat-square)](LICENSE)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%209-blueviolet?style=flat-square)](https://phpstan.org/)
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fchevere%2Faction%2F3.0)](https://dashboard.stryker-mutator.io/reports/github.com/chevere/action/3.0)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fchevere%2Faction%2F3.1)](https://dashboard.stryker-mutator.io/reports/github.com/chevere/action/3.1)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=alert_status)](https://sonarcloud.io/dashboard?id=chevere_action)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=chevere_action&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=chevere_action)
@@ -152,24 +152,71 @@ Define output validation rules:
 ```php
 use Chevere\Action\Action;
 use Chevere\Parameter\Interfaces\ParameterInterface;
-use function Chevere\Parameter\arrayOf;
+use function Chevere\Parameter\arrayp;
 use function Chevere\Parameter\int;
+use function Chevere\Parameter\string;
 
 class GetUserAction extends Action
 {
     public function __invoke(int $userId): array
     {
         $this->assertArguments($userId);
-        $result = ['id' => $userId, 'name' => 'John'];
+        $result = [
+            'id' => $userId,
+            'name' => 'John'
+        ];
         return $this->assertReturn($result);
     }
 
     public static function acceptReturn(): ParameterInterface
     {
-        return arrayOf(
-            int(key: 'id', min: 1),
-            string(key: 'name', minLength: 1),
+        return arrayp(
+            id: int(min: 1),
+            name: string(minLength: 1),
         );
+    }
+}
+```
+
+### Using `acceptReturnHook()`
+
+Define a hook to modify the return value before validation:
+
+```php
+use Chevere\Action\Action;
+use Chevere\Parameter\Interfaces\ArrayParameterInterface;
+use function Chevere\Parameter\arrayp;
+use function Chevere\Parameter\string;
+
+class GetUserAction extends Action
+{
+    private bool $isAdmin;
+
+    public function __invoke(int $userId): array
+    {
+        $result = [
+            'id' => $userId,
+            'name' => 'John',
+            'email' => 'john@example.com'
+        ];
+        return $this->assertReturn($result);
+    }
+
+    public static function acceptReturn(): ArrayParameterInterface
+    {
+        return arrayp(
+            id: string(),
+            name: string(),
+        )->withOptional(
+            email: string()
+        );
+    }
+
+    public function acceptReturnHook(ArrayParameterInterface $return): ArrayParameterInterface
+    {
+        return $this->isAdmin
+            ? $return->withMakeRequired('email')
+            : $return->without('email');
     }
 }
 ```

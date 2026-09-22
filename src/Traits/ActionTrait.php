@@ -68,8 +68,12 @@ trait ActionTrait
                 $cache[static::class] = true;
             }
             $this->acceptRulesRuntime();
+            $return = $reflection->return();
+            if (method_exists($this, 'acceptReturnHook')) {
+                $return = $this->acceptReturnHook($return);
+            }
 
-            return $reflection->return()->__invoke($value);
+            return $return->__invoke($value);
         } catch (Throwable $e) {
             throw new ActionException(
                 ...$this::getExceptionArguments($e),
