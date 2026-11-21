@@ -22,7 +22,6 @@ use Chevere\Parameter\Interfaces\ParametersInterface;
 use InvalidArgumentException;
 use ReflectionException;
 use Throwable;
-use function Chevere\Message\message;
 use function Chevere\Parameter\mixed;
 use function Chevere\Parameter\parameters;
 
@@ -171,11 +170,11 @@ trait ActionTrait
     private static function getExceptionArguments(Throwable $e): array
     {
         $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
-        $message = (string) message(
-            '`%actor%` %exception% → %message%',
-            exception: $e::class,
-            actor: static::class,
-            message: $e->getMessage(),
+        $message = sprintf(
+            '`%s` %s → %s',
+            static::class,
+            $e::class,
+            $e->getMessage(),
         );
 
         return [

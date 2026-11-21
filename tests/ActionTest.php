@@ -106,7 +106,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestIterableReturnError` InvalidArgumentException → [V *iterable]: Argument must be of type int, string given
+            `Chevere\Tests\src\ActionTestIterableReturnError` InvalidArgumentException → [/V *iterable]: Argument must be of type int, string given
             PLAIN
         );
         $action->__invoke();
@@ -178,7 +178,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestAttributes` InvalidArgumentException → [value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
+            `Chevere\Tests\src\ActionTestAttributes` InvalidArgumentException → [/value]: Argument value provided `ac` doesn't match the regex `/^ab$/`
             PLAIN
         );
         $action->__invoke(value: 'ac');
@@ -241,8 +241,8 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            [sensitive]: Argument value provided doesn't match the regex `#^super|taldo$#`
-            [secret]: Argument value provided is less than `1`
+            [/sensitive]: Argument value provided doesn't match the regex `#^super|taldo$#`
+            [/secret]: Argument value provided is less than `1`
             PLAIN
         );
         $action->__invoke('sensitive', -333);
@@ -256,8 +256,8 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            [foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
-            [bar]: Argument value provided `-111` is less than `1`
+            [/foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
+            [/bar]: Argument value provided `-111` is less than `1`
             PLAIN
         );
         $closure();
@@ -278,8 +278,8 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            [foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
-            [bar]: Argument value provided `-111` is less than `1`
+            [/foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
+            [/bar]: Argument value provided `-111` is less than `1`
             PLAIN
         );
         $closure();
@@ -300,8 +300,8 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            [foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
-            [bar]: Argument value provided `-111` is less than `1`
+            [/foo]: Argument value provided `error` doesn't match the regex `#^super|taldo$#`
+            [/bar]: Argument value provided `-111` is less than `1`
             PLAIN
         );
         $closure();
@@ -419,7 +419,7 @@ final class ActionTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            `Chevere\Tests\src\ActionTestAcceptParameters` InvalidArgumentException → [foo]: Argument value provided `ko` doesn't match the regex `/^ok$/`
+            `Chevere\Tests\src\ActionTestAcceptParameters` InvalidArgumentException → [/foo]: Argument value provided `ko` doesn't match the regex `/^ok$/`
             PLAIN
         );
         $action->__invoke('ko');

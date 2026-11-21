@@ -17,7 +17,6 @@ use Chevere\Action\Interfaces\ControllerInterface;
 use Chevere\Action\Traits\ActionTrait;
 use InvalidArgumentException;
 use ReflectionNamedType;
-use function Chevere\Message\message;
 
 abstract class Controller implements ControllerInterface
 {
@@ -54,11 +53,11 @@ abstract class Controller implements ControllerInterface
         $subjects = "`{$names}`";
 
         throw new InvalidArgumentException(
-            (string) message(
-                'Parameter(s) %parameters% must be compatible with type **%type%** at `%method%` method',
-                parameters: $subjects,
-                type: 'string|int|float',
-                method: static::class . '->__invoke()',
+            sprintf(
+                'Parameter(s) %s must be compatible with type **%s** at `%s` method',
+                $subjects,
+                'string|int|float',
+                static::class . '->__invoke()',
             )
         );
     }

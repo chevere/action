@@ -38,9 +38,9 @@ final class ControllerTest extends TestCase
         $this->expectException(ActionException::class);
         $this->expectExceptionMessage(
             <<<PLAIN
-            InvalidArgumentException → [int]: Argument must be of type int, stdClass given
-            [var]: Argument provided doesn't match union: Parameter `0` <Chevere\Parameter\StringParameter>: Argument must be of type Stringable|string, float given; Parameter `1` <Chevere\Parameter\IntParameter>: Argument must be of type int, float given
-            [float]: Argument must be of type float, string given
+            InvalidArgumentException → [/int]: Argument must be of type int, stdClass given
+            [/var]: Argument provided doesn't match union: Parameter `0` <string>: Argument must be of type Stringable|string, float given; Parameter `1` <int>: Argument must be of type int, float given
+            [/float]: Argument must be of type float, string given
             PLAIN
         );
         $controller = new ControllerTestSupportedTypes();

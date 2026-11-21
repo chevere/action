@@ -28,7 +28,6 @@ use ReflectionNamedType;
 use ReflectionUnionType;
 use Throwable;
 use TypeError;
-use function Chevere\Message\message;
 use function Chevere\Parameter\getParameters;
 use function Chevere\Parameter\mixed;
 use function Chevere\Parameter\parameters;
@@ -60,16 +59,16 @@ final class ReflectionAction implements ReflectionActionInterface
             if (! class_exists($action)) {
                 $concern = 'class';
 
-                throw new LogicException((string) message("Action doesn't exists"));
+                throw new LogicException(sprintf("Action doesn't exists"));
             }
             $interfaces = class_implements($action) ?: [];
             if (! in_array(ActionInterface::class, $interfaces, true)) {
                 $concern = 'interface';
 
                 throw new LogicException(
-                    (string) message(
-                        "Action doesn't implement `%interface%`",
-                        interface: ActionInterface::class,
+                    sprintf(
+                        "Action doesn't implement `%s`",
+                        ActionInterface::class,
                     )
                 );
             }
@@ -77,7 +76,7 @@ final class ReflectionAction implements ReflectionActionInterface
                 $concern = '__invoke';
 
                 throw new LogicException(
-                    (string) message("Action doesn't define a `__invoke` method")
+                    sprintf("Action doesn't define a `__invoke` method")
                 );
             }
         } catch (Throwable $e) {
@@ -116,9 +115,9 @@ final class ReflectionAction implements ReflectionActionInterface
                 }
 
                 throw new TypeError(
-                    (string) message(
-                        'Action `__invoke` method must declare `%type%` return type',
-                        type: $this->return->type()
+                    sprintf(
+                        'Action `__invoke` method must declare `%s` return type',
+                        $this->return->type()
                             ->typeHinting(),
                     )
                 );
@@ -196,9 +195,9 @@ final class ReflectionAction implements ReflectionActionInterface
         }
         if (! in_array($return, $expect, true)) {
             throw new TypeError(
-                (string) message(
-                    'Action `__invoke` method must declare `%type%` return type',
-                    type: implode('|', $expect),
+                sprintf(
+                    'Action `__invoke` method must declare `%s` return type',
+                    implode('|', $expect),
                 )
             );
         }

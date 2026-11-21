@@ -16,7 +16,6 @@ namespace Chevere\Action\Traits;
 use Chevere\Parameter\Arguments;
 use InvalidArgumentException;
 use ReflectionMethod;
-use function Chevere\Message\message;
 use function Chevere\Parameter\reflectionToParameters;
 
 trait ActionNameTrait
@@ -72,14 +71,15 @@ trait ActionNameTrait
             return;
         }
 
+        $exists = class_exists($this->name);
         throw new InvalidArgumentException(
-            (string) message(
-                class_exists($this->name)
-                    ? "{{ action }} `{{ name }}` doesn't implement `{{ interface }}`"
-                    : "{{ action }} `{{ name }}` doesn't exist",
-                action: $this::symbol(),
-                name: $this->name,
-                interface: $this->interface()
+            sprintf(
+                $exists
+                    ? "%s `%s` doesn't implement `%s`"
+                    : "%s `%s` doesn't exist",
+                $this::symbol(),
+                $this->name,
+                $this->interface(),
             )
         );
     }
