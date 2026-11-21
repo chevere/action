@@ -72,6 +72,7 @@ trait ActionNameTrait
         }
 
         $exists = class_exists($this->name);
+
         throw new InvalidArgumentException(
             sprintf(
                 $exists
